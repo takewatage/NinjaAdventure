@@ -1,0 +1,41 @@
+[gd_scene load_steps=7 format=3 uid="uid://d04phc08rhjo2"]
+
+[ext_resource type="PackedScene" uid="uid://skrlnoimlhsv" path="res://system/character/character.tscn" id="1_le1sv"]
+[ext_resource type="Texture2D" uid="uid://bdul7sik23a70" path="res://content/character/boy/SpriteSheet.png" id="2_q7g8l"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_3bukl"]
+radius = 7.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_bsdiu"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_eg6uo"]
+radius = 7.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_n4qix"]
+radius = 7.0
+
+[node name="Boy" instance=ExtResource("1_le1sv")]
+area_collision_shape = SubResource("CircleShape2D_3bukl")
+
+[node name="Hitbox" parent="." index="0"]
+visible = false
+
+[node name="Shape" type="CollisionShape2D" parent="Hitbox" index="0"]
+shape = SubResource("CircleShape2D_bsdiu")
+disabled = true
+
+[node name="Sprite" parent="." index="2"]
+texture = ExtResource("2_q7g8l")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." index="3"]
+shape = SubResource("CircleShape2D_eg6uo")
+debug_color = Color(0, 0.6, 0.701961, 0.419608)
+
+[node name="Camera2D" type="Camera2D" parent="." index="4"]
+visible = false
+zoom = Vector2(3.5, 3.5)
+
+[node name="CollisionShape" parent="Area2D" index="0"]
+shape = SubResource("CircleShape2D_n4qix")
+
+[connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]

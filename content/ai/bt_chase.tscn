@@ -1,0 +1,14 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://addons/beehave/nodes/composites/sequence_reactive.gd" id="1_dj7ft"]
+[ext_resource type="Script" path="res://system/ai/conditions/has_target.gd" id="2_mtgka"]
+[ext_resource type="Script" path="res://system/ai/actions/move_to_target.gd" id="3_grhcj"]
+
+[node name="Chase" type="Node" unique_id=1152694099]
+script = ExtResource("1_dj7ft")
+
+[node name="HasTarget" type="Node" parent="." unique_id=1006798590]
+script = ExtResource("2_mtgka")
+
+[node name="MoveToTarget" type="Node" parent="." unique_id=704495992]
+script = ExtResource("3_grhcj")

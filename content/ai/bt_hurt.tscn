@@ -1,0 +1,14 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://addons/beehave/nodes/composites/sequence_reactive.gd" id="1_0c4sk"]
+[ext_resource type="Script" path="res://system/ai/conditions/is_stunned.gd" id="2_hswyw"]
+[ext_resource type="Script" path="res://system/ai/actions/idle.gd" id="3_nri74"]
+
+[node name="Hurt" type="Node" unique_id=804273797]
+script = ExtResource("1_0c4sk")
+
+[node name="IsStunned" type="Node" parent="." unique_id=416641427]
+script = ExtResource("2_hswyw")
+
+[node name="Idle" type="Node" parent="." unique_id=280804617]
+script = ExtResource("3_nri74")

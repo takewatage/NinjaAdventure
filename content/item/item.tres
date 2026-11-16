@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ItemProtoset" load_steps=2 format=3 uid="uid://bjaudapn0lqib"]
+
+[ext_resource type="Script" path="res://addons/gloot/core/item_protoset.gd" id="1_w2l7c"]
+
+[resource]
+script = ExtResource("1_w2l7c")
+json_data = "[
+    {
+        \"id\": \"GoldCoin\",
+        \"image\": \"res://content/item/Treasure/GoldCoin.png\",
+\"name\": \"コイン\"
+    },
+    {
+        \"id\": \"SilverCoin\",
+        \"image\": \"res://content/item/Treasure/SilverCoin.png\"
+    }
+]"

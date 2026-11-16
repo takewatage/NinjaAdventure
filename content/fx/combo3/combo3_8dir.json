@@ -1,0 +1,709 @@
+{
+  "_doc": "8-direction version of combo3 for mouse aiming. All times in seconds, px in game pixels. See README_8dir.md.",
+  "tile_size": 16,
+  "direction_from_angle": "column = posmod(roundi(aim_angle / (PI/4)), 8)  # aim_angle = (mouse - player).angle(), Godot coords (y down)",
+  "directions": [
+    {
+      "column": 0,
+      "name": "right",
+      "angle_deg": 0,
+      "character_dir": "right",
+      "character_column": 3,
+      "fx_behind_character": false,
+      "hit2_flip_h": false
+    },
+    {
+      "column": 1,
+      "name": "down_right",
+      "angle_deg": 45,
+      "character_dir": "down",
+      "character_column": 0,
+      "fx_behind_character": false,
+      "hit2_flip_h": true
+    },
+    {
+      "column": 2,
+      "name": "down",
+      "angle_deg": 90,
+      "character_dir": "down",
+      "character_column": 0,
+      "fx_behind_character": false,
+      "hit2_flip_h": true
+    },
+    {
+      "column": 3,
+      "name": "down_left",
+      "angle_deg": 135,
+      "character_dir": "down",
+      "character_column": 0,
+      "fx_behind_character": false,
+      "hit2_flip_h": true
+    },
+    {
+      "column": 4,
+      "name": "left",
+      "angle_deg": 180,
+      "character_dir": "left",
+      "character_column": 2,
+      "fx_behind_character": false,
+      "hit2_flip_h": false
+    },
+    {
+      "column": 5,
+      "name": "up_left",
+      "angle_deg": 225,
+      "character_dir": "up",
+      "character_column": 1,
+      "fx_behind_character": true,
+      "hit2_flip_h": true
+    },
+    {
+      "column": 6,
+      "name": "up",
+      "angle_deg": 270,
+      "character_dir": "up",
+      "character_column": 1,
+      "fx_behind_character": true,
+      "hit2_flip_h": true
+    },
+    {
+      "column": 7,
+      "name": "up_right",
+      "angle_deg": 315,
+      "character_dir": "up",
+      "character_column": 1,
+      "fx_behind_character": true,
+      "hit2_flip_h": true
+    }
+  ],
+  "character": {
+    "sheet": "res://content/character/ninja_main/Attack.png",
+    "hframes": 4,
+    "vframes": 4,
+    "cell": [
+      32,
+      32
+    ],
+    "visual_center_in_cell": [
+      16,
+      17
+    ],
+    "columns": {
+      "down": 0,
+      "up": 1,
+      "left": 2,
+      "right": 3
+    }
+  },
+  "fx_common": {
+    "hframes": 8,
+    "fps": 30,
+    "cell": [
+      96,
+      96
+    ],
+    "pivot_in_cell": [
+      48,
+      48
+    ],
+    "loop": false,
+    "offset_from_character_sprite": [
+      0,
+      1
+    ],
+    "note": "Do not rotate the fx sprite: each column is already drawn for its direction. Pick the column, keep rotation 0."
+  },
+  "hit_shape_note": "Shapes are given facing RIGHT. Rotate by the exact aim angle (free aim) or by column*45deg (snapped). Origin = character visual center.",
+  "combo": {
+    "reset_after_sec": 0.25,
+    "hits": [
+      {
+        "index": 1,
+        "name": "hit1",
+        "character_rows": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "character_frame_sec": [
+          0.08,
+          0.08,
+          0.08,
+          0.08
+        ],
+        "duration_sec": 0.32,
+        "flip_h": false,
+        "fx": {
+          "sheet": "res://content/fx/combo3/fx_combo3_8dir_hit1_slash.png",
+          "vframes": 12,
+          "duration_sec": 0.4,
+          "spawn_at_sec": 0.08
+        },
+        "hit_shape": {
+          "type": "sector",
+          "inner_radius": 6,
+          "outer_radius": 28,
+          "half_angle_deg": 66,
+          "polygon": [
+            [
+              11.4,
+              -25.6
+            ],
+            [
+              18.2,
+              -21.3
+            ],
+            [
+              23.5,
+              -15.2
+            ],
+            [
+              26.8,
+              -8.0
+            ],
+            [
+              28.0,
+              0.0
+            ],
+            [
+              26.8,
+              8.0
+            ],
+            [
+              23.5,
+              15.2
+            ],
+            [
+              18.2,
+              21.3
+            ],
+            [
+              11.4,
+              25.6
+            ],
+            [
+              2.4,
+              5.5
+            ],
+            [
+              3.9,
+              4.6
+            ],
+            [
+              5.0,
+              3.3
+            ],
+            [
+              5.8,
+              1.7
+            ],
+            [
+              6.0,
+              0.0
+            ],
+            [
+              5.8,
+              -1.7
+            ],
+            [
+              5.0,
+              -3.3
+            ],
+            [
+              3.9,
+              -4.6
+            ],
+            [
+              2.4,
+              -5.5
+            ]
+          ]
+        },
+        "hit_tiles_by_column": [
+          [
+            [
+              1,
+              -1
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          [
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          [
+            [
+              -1,
+              1
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          [
+            [
+              -1,
+              0
+            ],
+            [
+              -1,
+              1
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          [
+            [
+              -1,
+              -1
+            ],
+            [
+              -1,
+              0
+            ],
+            [
+              -1,
+              1
+            ]
+          ],
+          [
+            [
+              -1,
+              0
+            ],
+            [
+              -1,
+              -1
+            ],
+            [
+              0,
+              -1
+            ]
+          ],
+          [
+            [
+              -1,
+              -1
+            ],
+            [
+              0,
+              -1
+            ],
+            [
+              1,
+              -1
+            ]
+          ],
+          [
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              -1
+            ],
+            [
+              0,
+              -1
+            ]
+          ]
+        ],
+        "active_sec": [
+          0.08,
+          0.18
+        ],
+        "lunge_px_along_aim": 5,
+        "cancel_from_sec": 0.16
+      },
+      {
+        "index": 2,
+        "name": "hit2",
+        "character_rows": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "character_frame_sec": [
+          0.08,
+          0.08,
+          0.08,
+          0.08
+        ],
+        "duration_sec": 0.32,
+        "flip_h": "directions[].hit2_flip_h",
+        "fx": {
+          "sheet": "res://content/fx/combo3/fx_combo3_8dir_hit2_slash_reverse.png",
+          "vframes": 12,
+          "duration_sec": 0.4,
+          "spawn_at_sec": 0.08
+        },
+        "hit_shape": {
+          "type": "sector",
+          "inner_radius": 6,
+          "outer_radius": 28,
+          "half_angle_deg": 66,
+          "polygon": [
+            [
+              11.4,
+              -25.6
+            ],
+            [
+              18.2,
+              -21.3
+            ],
+            [
+              23.5,
+              -15.2
+            ],
+            [
+              26.8,
+              -8.0
+            ],
+            [
+              28.0,
+              0.0
+            ],
+            [
+              26.8,
+              8.0
+            ],
+            [
+              23.5,
+              15.2
+            ],
+            [
+              18.2,
+              21.3
+            ],
+            [
+              11.4,
+              25.6
+            ],
+            [
+              2.4,
+              5.5
+            ],
+            [
+              3.9,
+              4.6
+            ],
+            [
+              5.0,
+              3.3
+            ],
+            [
+              5.8,
+              1.7
+            ],
+            [
+              6.0,
+              0.0
+            ],
+            [
+              5.8,
+              -1.7
+            ],
+            [
+              5.0,
+              -3.3
+            ],
+            [
+              3.9,
+              -4.6
+            ],
+            [
+              2.4,
+              -5.5
+            ]
+          ]
+        },
+        "hit_tiles_by_column": [
+          [
+            [
+              1,
+              -1
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          [
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          [
+            [
+              -1,
+              1
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          [
+            [
+              -1,
+              0
+            ],
+            [
+              -1,
+              1
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          [
+            [
+              -1,
+              -1
+            ],
+            [
+              -1,
+              0
+            ],
+            [
+              -1,
+              1
+            ]
+          ],
+          [
+            [
+              -1,
+              0
+            ],
+            [
+              -1,
+              -1
+            ],
+            [
+              0,
+              -1
+            ]
+          ],
+          [
+            [
+              -1,
+              -1
+            ],
+            [
+              0,
+              -1
+            ],
+            [
+              1,
+              -1
+            ]
+          ],
+          [
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              -1
+            ],
+            [
+              0,
+              -1
+            ]
+          ]
+        ],
+        "active_sec": [
+          0.08,
+          0.18
+        ],
+        "lunge_px_along_aim": 5,
+        "cancel_from_sec": 0.16
+      },
+      {
+        "index": 3,
+        "name": "hit3",
+        "character_rows": [
+          0,
+          1,
+          1,
+          2,
+          3
+        ],
+        "character_frame_sec": [
+          0.12,
+          0.08,
+          0.12,
+          0.1,
+          0.1
+        ],
+        "duration_sec": 0.52,
+        "flip_h": false,
+        "fx": {
+          "sheet": "res://content/fx/combo3/fx_combo3_8dir_hit3_thrust.png",
+          "vframes": 13,
+          "duration_sec": 0.433,
+          "spawn_at_sec": 0.12
+        },
+        "hit_shape": {
+          "type": "rect",
+          "x": 8,
+          "y": -8,
+          "w": 32,
+          "h": 16,
+          "polygon": [
+            [
+              8,
+              -8
+            ],
+            [
+              40,
+              -8
+            ],
+            [
+              40,
+              8
+            ],
+            [
+              8,
+              8
+            ]
+          ]
+        },
+        "hit_tiles_by_column": [
+          [
+            [
+              1,
+              0
+            ],
+            [
+              2,
+              0
+            ]
+          ],
+          [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ]
+          ],
+          [
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              2
+            ]
+          ],
+          [
+            [
+              -1,
+              1
+            ],
+            [
+              -2,
+              2
+            ]
+          ],
+          [
+            [
+              -1,
+              0
+            ],
+            [
+              -2,
+              0
+            ]
+          ],
+          [
+            [
+              -1,
+              -1
+            ],
+            [
+              -2,
+              -2
+            ]
+          ],
+          [
+            [
+              0,
+              -1
+            ],
+            [
+              0,
+              -2
+            ]
+          ],
+          [
+            [
+              1,
+              -1
+            ],
+            [
+              2,
+              -2
+            ]
+          ]
+        ],
+        "active_sec": [
+          0.12,
+          0.24
+        ],
+        "lunge_px_along_aim": 10,
+        "cancel_from_sec": null
+      }
+    ]
+  }
+}

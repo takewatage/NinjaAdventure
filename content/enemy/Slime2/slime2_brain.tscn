@@ -1,0 +1,53 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://addons/beehave/nodes/beehave_tree.gd" id="1_avt53"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/composites/selector_reactive.gd" id="2_k7yam"]
+[ext_resource type="PackedScene" path="res://content/ai/bt_hurt.tscn" id="3_e8jxm"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/composites/sequence_reactive.gd" id="4_s738t"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/composites/sequence.gd" id="5_3ktmy"]
+[ext_resource type="Script" path="res://system/ai/conditions/has_target.gd" id="6_dmee6"]
+[ext_resource type="Script" path="res://system/ai/conditions/attack_ready.gd" id="7_i2th5"]
+[ext_resource type="Resource" path="res://content/enemy/Slime2/slime2_tackle.tres" id="8_er2ag"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/composites/selector_random.gd" id="9_5vvxa"]
+[ext_resource type="Script" path="res://system/ai/actions/perform_attack.gd" id="10_hu6fd"]
+[ext_resource type="Script" path="res://system/ai/actions/flee_from_target.gd" id="11_ewsw5"]
+[ext_resource type="PackedScene" path="res://content/ai/bt_chase.tscn" id="12_7bxfn"]
+[ext_resource type="PackedScene" path="res://content/ai/bt_wander.tscn" id="13_xdnh7"]
+
+[node name="Brain" type="Node" unique_id=1595321370]
+script = ExtResource("1_avt53")
+
+[node name="Root" type="Node" parent="." unique_id=669632980]
+script = ExtResource("2_k7yam")
+
+[node name="Hurt" type="Node" parent="Root" unique_id=804273797 instance=ExtResource("3_e8jxm")]
+script = ExtResource("4_s738t")
+
+[node name="Engage" type="Node" parent="Root" unique_id=800050985]
+script = ExtResource("5_3ktmy")
+
+[node name="HasTarget" type="Node" parent="Root/Engage" unique_id=268273419]
+script = ExtResource("6_dmee6")
+
+[node name="TackleReady" type="Node" parent="Root/Engage" unique_id=499614051]
+script = ExtResource("7_i2th5")
+attack = ExtResource("8_er2ag")
+
+[node name="Choose" type="Node" parent="Root/Engage" unique_id=712686262]
+script = ExtResource("9_5vvxa")
+use_weights = true
+Weights/Tackle = 3
+Weights/Flee = 1
+
+[node name="Tackle" type="Node" parent="Root/Engage/Choose" unique_id=139636886]
+script = ExtResource("10_hu6fd")
+attack = ExtResource("8_er2ag")
+
+[node name="Flee" type="Node" parent="Root/Engage/Choose" unique_id=1750997702]
+script = ExtResource("11_ewsw5")
+
+[node name="Chase" type="Node" parent="Root" unique_id=1152694099 instance=ExtResource("12_7bxfn")]
+script = ExtResource("4_s738t")
+
+[node name="Wander" type="Node" parent="Root" unique_id=1932092141 instance=ExtResource("13_xdnh7")]
+script = ExtResource("5_3ktmy")

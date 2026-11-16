@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ResourceEnemyAttack" format=3 uid="uid://cgkem6ix626px"]
+
+[ext_resource type="Script" uid="uid://mcmxnoj3kifc" path="res://system/damage/resource_damage.gd" id="1_bwqan"]
+[ext_resource type="Script" uid="uid://bcmavxxjtnibv" path="res://system/enemy/resource_enemy_attack.gd" id="2_5244f"]
+
+[sub_resource type="Resource" id="Resource_tkpi4"]
+script = ExtResource("1_bwqan")
+push_force = 60
+
+[resource]
+script = ExtResource("2_5244f")
+damage = SubResource("Resource_tkpi4")
+range_max = 48.0
+windup_time = 0.45
+recovery_time = 0.5
+cooldown = 1.2
+active_time = 0.35
+lunge_speed = 180.0

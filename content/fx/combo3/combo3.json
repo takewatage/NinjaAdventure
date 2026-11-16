@@ -1,0 +1,291 @@
+{
+  "_doc": "Three-hit combo for ninja_main. All times in seconds, all px in game pixels. See README.md.",
+  "tile_size": 16,
+  "direction_columns": {
+    "down": 0,
+    "up": 1,
+    "left": 2,
+    "right": 3
+  },
+  "character": {
+    "sheet": "res://content/character/ninja_main/Attack.png",
+    "hframes": 4,
+    "vframes": 4,
+    "cell": [
+      32,
+      32
+    ],
+    "visual_center_in_cell": [
+      16,
+      17
+    ],
+    "note": "column = direction, row = attack frame. The figure's center sits 1 px below the cell center."
+  },
+  "fx_common": {
+    "hframes": 4,
+    "fps": 30,
+    "cell": [
+      96,
+      96
+    ],
+    "pivot_in_cell": [
+      48,
+      48
+    ],
+    "loop": false,
+    "z_by_direction": {
+      "down": "front",
+      "up": "behind",
+      "left": "front",
+      "right": "front"
+    },
+    "offset_from_character_sprite": [
+      0,
+      1
+    ],
+    "note": "pivot = character visual center. With a centered 32x32 character Sprite2D, put the fx Sprite2D (centered) at the character sprite position + offset."
+  },
+  "combo": {
+    "input_buffer_from": "active start of the current hit",
+    "next_hit_starts_at": "cancel_from of the current hit (if an input is buffered), else the hit plays out and the combo resets",
+    "reset_after_sec": 0.25,
+    "hits": [
+      {
+        "index": 1,
+        "name": "hit1",
+        "character_rows": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "character_frame_sec": [
+          0.08,
+          0.08,
+          0.08,
+          0.08
+        ],
+        "duration_sec": 0.32,
+        "flip_h": {
+          "down": false,
+          "up": false,
+          "left": false,
+          "right": false
+        },
+        "fx": {
+          "sheet": "res://content/fx/combo3/fx_combo3_hit1_slash.png",
+          "vframes": 12,
+          "duration_sec": 0.4,
+          "spawn_at_sec": 0.08
+        },
+        "hitbox": {
+          "down": {
+            "x": -24,
+            "y": 8,
+            "w": 48,
+            "h": 16
+          },
+          "up": {
+            "x": -24,
+            "y": -24,
+            "w": 48,
+            "h": 16
+          },
+          "left": {
+            "x": -24,
+            "y": -24,
+            "w": 16,
+            "h": 48
+          },
+          "right": {
+            "x": 8,
+            "y": -24,
+            "w": 16,
+            "h": 48
+          }
+        },
+        "active_sec": [
+          0.08,
+          0.18
+        ],
+        "lunge_px": {
+          "down": [
+            0,
+            0
+          ],
+          "up": [
+            0,
+            0
+          ],
+          "left": [
+            0,
+            0
+          ],
+          "right": [
+            0,
+            0
+          ]
+        },
+        "cancel_from_sec": 0.16
+      },
+      {
+        "index": 2,
+        "name": "hit2",
+        "character_rows": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "character_frame_sec": [
+          0.08,
+          0.08,
+          0.08,
+          0.08
+        ],
+        "duration_sec": 0.32,
+        "flip_h": {
+          "down": true,
+          "up": true,
+          "left": false,
+          "right": false
+        },
+        "fx": {
+          "sheet": "res://content/fx/combo3/fx_combo3_hit2_slash_reverse.png",
+          "vframes": 12,
+          "duration_sec": 0.4,
+          "spawn_at_sec": 0.08
+        },
+        "hitbox": {
+          "down": {
+            "x": -24,
+            "y": 8,
+            "w": 48,
+            "h": 16
+          },
+          "up": {
+            "x": -24,
+            "y": -24,
+            "w": 48,
+            "h": 16
+          },
+          "left": {
+            "x": -24,
+            "y": -24,
+            "w": 16,
+            "h": 48
+          },
+          "right": {
+            "x": 8,
+            "y": -24,
+            "w": 16,
+            "h": 48
+          }
+        },
+        "active_sec": [
+          0.08,
+          0.18
+        ],
+        "lunge_px": {
+          "down": [
+            0,
+            0
+          ],
+          "up": [
+            0,
+            0
+          ],
+          "left": [
+            0,
+            0
+          ],
+          "right": [
+            0,
+            0
+          ]
+        },
+        "cancel_from_sec": 0.16
+      },
+      {
+        "index": 3,
+        "name": "hit3",
+        "character_rows": [
+          0,
+          1,
+          1,
+          2,
+          3
+        ],
+        "character_frame_sec": [
+          0.12,
+          0.08,
+          0.12,
+          0.1,
+          0.1
+        ],
+        "duration_sec": 0.52,
+        "flip_h": {
+          "down": false,
+          "up": false,
+          "left": false,
+          "right": false
+        },
+        "fx": {
+          "sheet": "res://content/fx/combo3/fx_combo3_hit3_thrust.png",
+          "vframes": 13,
+          "duration_sec": 0.433,
+          "spawn_at_sec": 0.12
+        },
+        "hitbox": {
+          "down": {
+            "x": -8,
+            "y": 8,
+            "w": 16,
+            "h": 32
+          },
+          "up": {
+            "x": -8,
+            "y": -40,
+            "w": 16,
+            "h": 32
+          },
+          "left": {
+            "x": -40,
+            "y": -8,
+            "w": 32,
+            "h": 16
+          },
+          "right": {
+            "x": 8,
+            "y": -8,
+            "w": 32,
+            "h": 16
+          }
+        },
+        "active_sec": [
+          0.12,
+          0.24
+        ],
+        "lunge_px": {
+          "down": [
+            0,
+            3
+          ],
+          "up": [
+            0,
+            -3
+          ],
+          "left": [
+            -3,
+            0
+          ],
+          "right": [
+            3,
+            0
+          ]
+        },
+        "cancel_from_sec": null
+      }
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ResourceEnemy" format=3]
+
+[ext_resource type="Script" path="res://system/enemy/resource_enemy.gd" id="1_lrtak"]
+[ext_resource type="Script" path="res://system/damage/resource_damage.gd" id="2_dmg"]
+
+[sub_resource type="Resource" id="Resource_contact"]
+script = ExtResource("2_dmg")
+amount = 1
+push_force = 40
+
+[resource]
+script = ExtResource("1_lrtak")
+contact_damage = SubResource("Resource_contact")

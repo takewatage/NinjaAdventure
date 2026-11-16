@@ -1,0 +1,14 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://addons/beehave/nodes/composites/sequence.gd" id="1_bjba7"]
+[ext_resource type="Script" path="res://system/ai/actions/wander_move.gd" id="2_6215r"]
+[ext_resource type="Script" path="res://system/ai/actions/wait_random.gd" id="3_6uuqo"]
+
+[node name="Wander" type="Node" unique_id=1932092141]
+script = ExtResource("1_bjba7")
+
+[node name="WanderMove" type="Node" parent="." unique_id=33247644]
+script = ExtResource("2_6215r")
+
+[node name="WaitRandom" type="Node" parent="." unique_id=647516510]
+script = ExtResource("3_6uuqo")

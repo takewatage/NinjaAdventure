@@ -1,0 +1,26 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# Godot editor temp files (left behind when a save is interrupted)
+*.tmp
+
+# Export output
+/build/
+/export/
+*.pck
+*.exe
+*.dmg
+*.x86_64
+*.apk
+*.aab
+export_credentials.cfg
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Claude Code personal settings (project rules in .claude/rules are shared)
+.claude/settings.local.json
