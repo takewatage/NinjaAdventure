@@ -1,0 +1,149 @@
+{
+  "jutsu_id": "water_shuriken",
+  "jutsu_name": "水遁・水手裏剣の術（溜め）",
+  "element": "水",
+  "talisman": {
+    "uses": true,
+    "type": "per-jutsu talisman (stock and max differ per jutsu)",
+    "per_cast": "未定（案: まず1枚、強すぎたら増やす）",
+    "max_stock": "未定",
+    "on_empty": "do not auto-switch; stay selected, dry-fire (UI shake + sound)",
+    "spec": "see document/忍術システム仕様.md (project doc)",
+    "note": "charged shot of the same jutsu, uses the same talisman stock"
+  },
+  "_doc": "Charged water shuriken for ninja_main, facing RIGHT only for now. Hold to charge, release to throw. Times in s, px in game pixels. Sheets: 1 column x N rows.",
+  "tile_size": 16,
+  "direction": "right",
+  "input": {
+    "hold_to_charge": true,
+    "release_before_full": "throw the normal water shuriken (res://content/fx/water_shuriken/water_shuriken.json)",
+    "release_after_full": "throw the big one (this file)",
+    "full_charge_sec": 0.9,
+    "max_hold_sec": null
+  },
+  "character": {
+    "sheet": "res://content/character/ninja_main/Attack.png",
+    "column": 3,
+    "charging_row": 0,
+    "charging_note": "hold Attack row 0 (wind-up) while charging",
+    "release_rows": [
+      1,
+      2,
+      3
+    ],
+    "release_frame_sec": [
+      0.1,
+      0.08,
+      0.1
+    ],
+    "visual_center_in_cell": [
+      16,
+      17
+    ],
+    "move_speed_mult_while_charging_suggestion": 0.4
+  },
+  "charge_loop": {
+    "sheet": "res://content/fx/water_shuriken/fx_water_charge_loop.png",
+    "cell": [
+      64,
+      64
+    ],
+    "vframes": 18,
+    "fps": 30,
+    "loop": true,
+    "pivot_in_cell": [
+      32,
+      32
+    ],
+    "pivot_is": "character visual center",
+    "start": "when the button is pressed",
+    "stop": "on release",
+    "z": "fx contains things in front and behind; draw in front of the character"
+  },
+  "charge_full": {
+    "sheet": "res://content/fx/water_shuriken/fx_water_charge_full.png",
+    "cell": [
+      72,
+      72
+    ],
+    "vframes": 12,
+    "fps": 30,
+    "loop": false,
+    "pivot_in_cell": [
+      36,
+      36
+    ],
+    "pivot_is": "character visual center",
+    "start_sec": 0.9,
+    "note": "plays once over the loop when the charge is full; a good moment for a sound / small screen flash"
+  },
+  "big_throw": {
+    "sheet": "res://content/fx/water_shuriken/fx_water_shuriken_big_throw.png",
+    "cell": [
+      56,
+      48
+    ],
+    "vframes": 13,
+    "fps": 30,
+    "loop": false,
+    "pivot_in_cell": [
+      24,
+      24
+    ],
+    "pivot_is": "character visual center",
+    "start": "on release (after full)"
+  },
+  "projectile": {
+    "sheet": "res://content/fx/water_shuriken/fx_water_shuriken_big_projectile.png",
+    "cell": [
+      80,
+      48
+    ],
+    "vframes": 12,
+    "fps": 30,
+    "loop": true,
+    "pivot_in_cell": [
+      54,
+      24
+    ],
+    "pivot_is": "projectile position (center of the star)",
+    "spawn_delay_sec": 0.03,
+    "spawn_offset_from_character": [
+      16,
+      0
+    ],
+    "speed_px_s": 170,
+    "max_range_px": 144,
+    "hit_shape": {
+      "type": "circle",
+      "radius": 10
+    },
+    "pierce": true,
+    "pierce_note": "passes through enemies (hit each enemy once); explodes at max range or on a wall",
+    "spin": "baked in, 1 turn per loop"
+  },
+  "impact": {
+    "sheet": "res://content/fx/water_shuriken/fx_water_shuriken_big_impact.png",
+    "cell": [
+      88,
+      88
+    ],
+    "vframes": 21,
+    "fps": 30,
+    "loop": false,
+    "pivot_in_cell": [
+      44,
+      44
+    ],
+    "pivot_is": "impact point",
+    "splash": {
+      "type": "circle",
+      "radius": 16,
+      "active_sec": [
+        0.0,
+        0.1
+      ]
+    }
+  },
+  "cooldown_sec_suggestion": 1.0
+}

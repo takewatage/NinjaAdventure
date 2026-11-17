@@ -1,0 +1,147 @@
+{
+  "jutsu_id": "fuuton",
+  "jutsu_name": "風遁・陣風",
+  "element": "風",
+  "talisman": {
+    "uses": true,
+    "type": "per-jutsu talisman (stock and max differ per jutsu)",
+    "per_cast": "未定（仮: 1）",
+    "max_stock": "未定",
+    "on_empty": "do not auto-switch; stay selected, dry-fire (UI shake + sound)",
+    "spec": "see document/忍術システム仕様.md (project doc)"
+  },
+  "_doc": "Fuuton Jinpuu (wind release) for ninja_main, facing RIGHT only for now: a wind ball flies straight, and where it lands a tornado rises, stays a while, then unwinds. Times in s, px in game pixels.",
+  "tile_size": 16,
+  "direction": "right",
+  "character": {
+    "sheet": "res://content/character/ninja_main/Attack.png",
+    "column": 3,
+    "rows": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "frame_sec": [
+      0.3,
+      0.1,
+      0.08,
+      0.1
+    ]
+  },
+  "cast": {
+    "sheet": "res://content/fx/fuuton/fx_fuuton_cast.png",
+    "cell": [
+      64,
+      40
+    ],
+    "vframes": 12,
+    "fps": 30,
+    "loop": false,
+    "duration_sec": 0.4,
+    "pivot_in_cell": [
+      40,
+      20
+    ],
+    "pivot_is": "character visual center (the ball forms at the hand, offset [10, 0])",
+    "start_sec": 0.0
+  },
+  "ball": {
+    "sheet": "res://content/fx/fuuton/fx_fuuton_ball.png",
+    "cell": [
+      64,
+      40
+    ],
+    "vframes": 12,
+    "fps": 30,
+    "loop": true,
+    "duration_sec": 0.4,
+    "pivot_in_cell": [
+      40,
+      20
+    ],
+    "pivot_is": "ball center",
+    "spawn_sec": 0.3,
+    "spawn_offset_from_character": [
+      10,
+      0
+    ],
+    "speed_px_s": 180,
+    "max_range_px": 96,
+    "hit_shape": {
+      "type": "circle",
+      "radius": 6
+    },
+    "lands_on": "the first enemy or wall it touches, or at max range",
+    "damage_on_contact": "small"
+  },
+  "tornado": {
+    "pivot_is": "the tornado's foot on the ground = where the ball landed",
+    "spawn": {
+      "sheet": "res://content/fx/fuuton/fx_fuuton_tornado_spawn.png",
+      "cell": [
+        72,
+        80
+      ],
+      "vframes": 24,
+      "fps": 30,
+      "loop": false,
+      "duration_sec": 0.8,
+      "pivot_in_cell": [
+        36,
+        68
+      ],
+      "note": "its last frame matches loop frame 0: switch to loop at frame 0"
+    },
+    "loop": {
+      "sheet": "res://content/fx/fuuton/fx_fuuton_tornado_loop.png",
+      "cell": [
+        72,
+        80
+      ],
+      "vframes": 24,
+      "fps": 30,
+      "loop": true,
+      "duration_sec": 0.8,
+      "pivot_in_cell": [
+        36,
+        68
+      ]
+    },
+    "end": {
+      "sheet": "res://content/fx/fuuton/fx_fuuton_tornado_end.png",
+      "cell": [
+        72,
+        80
+      ],
+      "vframes": 17,
+      "fps": 30,
+      "loop": false,
+      "duration_sec": 0.567,
+      "pivot_in_cell": [
+        36,
+        68
+      ]
+    },
+    "lifetime_sec": 3.0,
+    "lifetime_note": "spawn (0.8) + loop until lifetime - end duration + end (0.57)",
+    "hit": {
+      "shape": "ellipse",
+      "center": [
+        0,
+        0
+      ],
+      "rx": 16,
+      "ry": 10,
+      "active": "from spawn 0.15 s until end 0.2 s",
+      "damage_tick_sec": 0.25,
+      "pull_suggestion": {
+        "towards_center_px_s": 40,
+        "note": "enemies inside drift to the center"
+      }
+    },
+    "y_sort": "sort by the foot (pivot); the funnel is ~48 px tall and may cover things behind it",
+    "max_alive_suggestion": 1
+  },
+  "cooldown_sec_suggestion": 5.0
+}

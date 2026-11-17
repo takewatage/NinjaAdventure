@@ -1,0 +1,126 @@
+{
+  "jutsu_id": "kirigakure",
+  "jutsu_name": "霧隠れの術",
+  "element": "未定",
+  "talisman": {
+    "uses": true,
+    "type": "per-jutsu talisman (stock and max differ per jutsu)",
+    "per_cast": "未定（仮: 1）",
+    "max_stock": "未定",
+    "on_empty": "do not auto-switch; stay selected, dry-fire (UI shake + sound)",
+    "spec": "see document/忍術システム仕様.md (project doc)"
+  },
+  "_doc": "Kirigakure v2: the character wavers like a mirage and fades out (no mist puffs). Done with a shader on the character's sprite, so it works for every direction and animation, walking included.",
+  "shader": "res://content/fx/kirigakure/kirigakure_mirage.gdshader",
+  "how": [
+    "give the character's Sprite2D a ShaderMaterial with this shader",
+    "on cast: tween the uniforms 'amount' and 'visibility' along 'enter' (linear between keys)",
+    "while invisible: keep the 'invisible' values",
+    "on time out / attack: tween along 'exit', then remove the material (or leave it at amount 0, visibility 1)"
+  ],
+  "uniform_defaults": {
+    "wave_px": 2.5,
+    "wave_freq": 0.55,
+    "wave_speed": 7.0,
+    "wave2_mix": 0.4,
+    "haze_color": "#cce0ff",
+    "haze_strength": 0.35,
+    "dither_fade": false
+  },
+  "curves": {
+    "enter": {
+      "duration_sec": 0.9,
+      "amount": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.35,
+          1.0
+        ]
+      ],
+      "visibility": [
+        [
+          0.0,
+          1.0
+        ],
+        [
+          0.25,
+          1.0
+        ],
+        [
+          0.9,
+          0.3
+        ]
+      ],
+      "then": "invisible"
+    },
+    "invisible": {
+      "amount": 0.55,
+      "visibility": 0.3,
+      "note": "hold while the jutsu lasts"
+    },
+    "exit": {
+      "duration_sec": 0.6,
+      "amount": [
+        [
+          0.0,
+          0.55
+        ],
+        [
+          0.1,
+          1.0
+        ],
+        [
+          0.6,
+          0.0
+        ]
+      ],
+      "visibility": [
+        [
+          0.0,
+          0.3
+        ],
+        [
+          0.45,
+          1.0
+        ]
+      ]
+    }
+  },
+  "keys_format": "[time_sec, value]",
+  "visibility_note": "0.3 lets the player still see themself. For an enemy's eyes the character is fully hidden (game logic).",
+  "gameplay_suggestion": {
+    "duration_sec": 5.0,
+    "breaks_on_attack": true,
+    "enemies_lose_target": true,
+    "cooldown_sec": 12.0
+  },
+  "veil": {
+    "what": "mist swirling round the body while it wavers away; two sheets so the mist wraps round the character",
+    "back": {
+      "sheet": "res://content/fx/kirigakure/fx_kirigakure_veil_back.png",
+      "z": "behind the character"
+    },
+    "front": {
+      "sheet": "res://content/fx/kirigakure/fx_kirigakure_veil_front.png",
+      "z": "in front of the character"
+    },
+    "cell": [
+      72,
+      64
+    ],
+    "vframes": 36,
+    "fps": 30,
+    "loop": false,
+    "duration_sec": 1.2,
+    "pivot_in_cell": [
+      36,
+      38
+    ],
+    "pivot_is": "character visual center",
+    "start": "together with the 'enter' curve (t = 0)",
+    "follows_character": "no: leave it where the jutsu was cast (it reads better if the player walks out of the mist)"
+  }
+}

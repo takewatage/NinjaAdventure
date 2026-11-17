@@ -1,0 +1,91 @@
+{
+  "jutsu_id": "raiton",
+  "jutsu_name": "雷遁・雷轟の術",
+  "element": "雷",
+  "talisman": {
+    "uses": true,
+    "type": "per-jutsu talisman (stock and max differ per jutsu)",
+    "per_cast": "未定（仮: 1）",
+    "max_stock": "未定",
+    "on_empty": "do not auto-switch; stay selected, dry-fire (UI shake + sound)",
+    "spec": "see document/忍術システム仕様.md (project doc)"
+  },
+  "level_effects": {
+    "chain": {
+      "what": "the hit jumps from the struck enemy to nearby enemies",
+      "unlocked_at_level": "未定 (locked at Lv1)",
+      "fx_note": "chain arcs are not in this sheet yet: ask for a 'raiton chain arc' asset when the rule is fixed"
+    }
+  },
+  "_doc": "Raiton (lightning-release) for ninja_main, facing RIGHT only for now. One sheet holds the whole jutsu: cast, strike, aftermath. Times in s, px in game pixels.",
+  "tile_size": 16,
+  "direction": "right",
+  "fx": {
+    "sheet": "res://content/fx/raiton/fx_raiton.png",
+    "cell": [
+      128,
+      140
+    ],
+    "vframes": 31,
+    "fps": 30,
+    "loop": false,
+    "duration_sec": 1.033,
+    "pivot_in_cell": [
+      28,
+      112
+    ],
+    "pivot_is": "character visual center",
+    "z": "in front of the character (the bolt comes down from above the frame)"
+  },
+  "character": {
+    "sheet": "res://content/character/ninja_main/Attack.png",
+    "column": 3,
+    "rows": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "frame_sec": [
+      0.3,
+      0.12,
+      0.1,
+      0.12
+    ],
+    "note": "row 0 while the hands crackle, row 1 on the strike"
+  },
+  "strike": {
+    "at_sec": 0.3,
+    "target_offset_from_character": [
+      36,
+      2
+    ],
+    "target_note": "about 2 tiles ahead. To aim at the mouse later, move the fx so its target lands on the aim point (the sheet is drawn for this offset).",
+    "hit": {
+      "shape": "ellipse",
+      "center_offset_from_character": [
+        36,
+        2
+      ],
+      "rx": 14,
+      "ry": 10.5,
+      "active_sec": [
+        0.3,
+        0.42
+      ]
+    },
+    "status_suggestion": {
+      "stun_sec": 0.6
+    }
+  },
+  "screen_suggestion": {
+    "flash": "white, alpha 0.35 -> 0 over 0.1 s at the strike",
+    "shake": "2 px for 0.15 s at the strike"
+  },
+  "light_suggestion": {
+    "node": "PointLight2D at the target",
+    "color": "#9ed8ff",
+    "energy": "2.0 at the strike -> 0 over 0.25 s"
+  },
+  "cooldown_sec_suggestion": 1.2
+}

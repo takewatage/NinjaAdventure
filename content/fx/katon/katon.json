@@ -1,0 +1,161 @@
+{
+  "jutsu_id": "katon",
+  "jutsu_name": "火遁・息吹の術",
+  "element": "火",
+  "talisman": {
+    "uses": true,
+    "type": "per-jutsu talisman (stock and max differ per jutsu)",
+    "per_cast": "未定（仮: 1）",
+    "max_stock": "未定",
+    "on_empty": "do not auto-switch; stay selected, dry-fire (UI shake + sound)",
+    "spec": "see document/忍術システム仕様.md (project doc)",
+    "per_cast_note": "hold-type: 1 per press (未定: or per second of breath)"
+  },
+  "_doc": "Katon (fire-release breath) for ninja_main, facing RIGHT only for now. Hold the button: start -> loop (while held) -> end (on release). Times in s, px in game pixels.",
+  "tile_size": 16,
+  "direction": "right",
+  "flow": [
+    "on press: play start once, then switch to loop",
+    "while held: keep loop playing (seamless)",
+    "on release: switch to end, play once"
+  ],
+  "min_hold_sec": 0.333,
+  "character": {
+    "sheet": "res://content/character/ninja_main/Attack.png",
+    "column": 3,
+    "start_rows": [
+      0,
+      1
+    ],
+    "start_frame_sec": [
+      0.1,
+      0.0
+    ],
+    "hold_row": 1,
+    "end_rows": [
+      2,
+      3
+    ],
+    "end_frame_sec": [
+      0.1,
+      0.12
+    ],
+    "note": "row 0 briefly, then hold row 1 while breathing fire; rows 2,3 on release",
+    "move_speed_mult_while_breathing_suggestion": 0.3,
+    "turning_while_breathing": "allowed (re-aim the cone), or lock the direction for a heavier feel"
+  },
+  "start": {
+    "sheet": "res://content/fx/katon/fx_katon_start.png",
+    "cell": [
+      96,
+      72
+    ],
+    "vframes": 10,
+    "fps": 30,
+    "loop": false,
+    "duration_sec": 0.333,
+    "pivot_in_cell": [
+      16,
+      36
+    ],
+    "pivot_is": "character visual center",
+    "switch_to_loop_at_end": true
+  },
+  "loop": {
+    "sheet": "res://content/fx/katon/fx_katon_loop.png",
+    "cell": [
+      96,
+      72
+    ],
+    "vframes": 18,
+    "fps": 30,
+    "loop": true,
+    "duration_sec": 0.6,
+    "pivot_in_cell": [
+      16,
+      36
+    ],
+    "pivot_is": "character visual center"
+  },
+  "end": {
+    "sheet": "res://content/fx/katon/fx_katon_end.png",
+    "cell": [
+      96,
+      72
+    ],
+    "vframes": 14,
+    "fps": 30,
+    "loop": false,
+    "duration_sec": 0.467,
+    "pivot_in_cell": [
+      16,
+      36
+    ],
+    "pivot_is": "character visual center"
+  },
+  "z": "in front of the character",
+  "hit": {
+    "shape": "sector",
+    "origin_offset_from_character": [
+      9,
+      -1
+    ],
+    "radius": 50,
+    "half_angle_deg": 24,
+    "polygon_facing_right": [
+      [
+        0,
+        0
+      ],
+      [
+        45.7,
+        -20.3
+      ],
+      [
+        47.2,
+        -16.4
+      ],
+      [
+        48.4,
+        -12.4
+      ],
+      [
+        49.3,
+        -8.3
+      ],
+      [
+        49.8,
+        -4.2
+      ],
+      [
+        50.0,
+        0.0
+      ],
+      [
+        49.8,
+        4.2
+      ],
+      [
+        49.3,
+        8.3
+      ],
+      [
+        48.4,
+        12.4
+      ],
+      [
+        47.2,
+        16.4
+      ],
+      [
+        45.7,
+        20.3
+      ]
+    ],
+    "radius_grows_over_start_sec": 0.25,
+    "active_until_sec_after_release": 0.15,
+    "damage_tick_sec": 0.15,
+    "note": "damage every tick to each target inside (multi-hit). Polygon origin = the mouth."
+  },
+  "mp_cost_per_sec_suggestion": 10
+}

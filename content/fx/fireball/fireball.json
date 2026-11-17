@@ -1,0 +1,107 @@
+{
+  "jutsu_id": "fireball",
+  "jutsu_name": "火炎弾の術",
+  "element": "火",
+  "talisman": {
+    "uses": true,
+    "type": "per-jutsu talisman (stock and max differ per jutsu)",
+    "per_cast": "未定（仮: 1）",
+    "max_stock": "未定",
+    "on_empty": "do not auto-switch; stay selected, dry-fire (UI shake + sound)",
+    "spec": "see document/忍術システム仕様.md (project doc)"
+  },
+  "_doc": "Fireball spell for ninja_main, facing RIGHT only for now. Times in s, px in game pixels. Sheets: 1 column x N rows (a column per direction will be added later, like combo3).",
+  "tile_size": 16,
+  "direction": "right",
+  "direction_column": 0,
+  "character": {
+    "sheet": "res://content/character/ninja_main/Attack.png",
+    "column": 3,
+    "rows": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "frame_sec": [
+      0.2,
+      0.1,
+      0.1,
+      0.1
+    ],
+    "duration_sec": 0.5,
+    "visual_center_in_cell": [
+      16,
+      17
+    ]
+  },
+  "cast": {
+    "sheet": "res://content/fx/fireball/fx_fireball_cast.png",
+    "cell": [
+      56,
+      48
+    ],
+    "vframes": 13,
+    "fps": 30,
+    "loop": false,
+    "pivot_in_cell": [
+      24,
+      24
+    ],
+    "pivot_is": "character visual center",
+    "start_sec": 0.0,
+    "z": "in front of the character"
+  },
+  "projectile": {
+    "sheet": "res://content/fx/fireball/fx_fireball_projectile.png",
+    "cell": [
+      56,
+      24
+    ],
+    "vframes": 18,
+    "fps": 30,
+    "loop": true,
+    "pivot_in_cell": [
+      42,
+      12
+    ],
+    "pivot_is": "projectile position (center of the head)",
+    "spawn_sec": 0.2,
+    "spawn_offset_from_character": [
+      10,
+      0
+    ],
+    "speed_px_s": 140,
+    "max_range_px": 96,
+    "hit_shape": {
+      "type": "circle",
+      "radius": 4
+    },
+    "on_max_range": "explode (play impact at the projectile position)"
+  },
+  "impact": {
+    "sheet": "res://content/fx/fireball/fx_fireball_impact.png",
+    "cell": [
+      64,
+      64
+    ],
+    "vframes": 19,
+    "fps": 30,
+    "loop": false,
+    "pivot_in_cell": [
+      32,
+      32
+    ],
+    "pivot_is": "impact point",
+    "splash": {
+      "type": "circle",
+      "radius": 12,
+      "active_sec": [
+        0.0,
+        0.1
+      ]
+    },
+    "note": "scorch on the ground is baked in (fades by 0.6 s)"
+  },
+  "cooldown_sec_suggestion": 0.6
+}

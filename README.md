@@ -2,6 +2,8 @@
 
 Zelda-like 2D top-down RPG (Godot 4.7 / GDScript).
 
+設計資料（体験版の範囲・忍術の仕様など）は `document/` にある。
+
 ## 状況
 
 ### できていること

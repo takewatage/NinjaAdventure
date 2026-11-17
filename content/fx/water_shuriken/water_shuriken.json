@@ -1,0 +1,102 @@
+{
+  "jutsu_id": "water_shuriken",
+  "jutsu_name": "水遁・水手裏剣の術",
+  "element": "水",
+  "talisman": {
+    "uses": true,
+    "type": "per-jutsu talisman (stock and max differ per jutsu)",
+    "per_cast": "未定（仮: 1）",
+    "max_stock": "未定",
+    "on_empty": "do not auto-switch; stay selected, dry-fire (UI shake + sound)",
+    "spec": "see document/忍術システム仕様.md (project doc)"
+  },
+  "charged": "res://content/fx/water_shuriken/water_shuriken_charge.json",
+  "_doc": "Water shuriken for ninja_main, facing RIGHT only for now. Times in s, px in game pixels. Sheets: 1 column x N rows (a column per direction will be added later, like combo3).",
+  "tile_size": 16,
+  "direction": "right",
+  "direction_column": 0,
+  "character": {
+    "sheet": "res://content/character/ninja_main/Attack.png",
+    "column": 3,
+    "rows": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "frame_sec": [
+      0.18,
+      0.1,
+      0.08,
+      0.08
+    ],
+    "duration_sec": 0.44,
+    "visual_center_in_cell": [
+      16,
+      17
+    ]
+  },
+  "cast": {
+    "sheet": "res://content/fx/water_shuriken/fx_water_shuriken_cast.png",
+    "cell": [
+      56,
+      48
+    ],
+    "vframes": 13,
+    "fps": 30,
+    "loop": false,
+    "pivot_in_cell": [
+      24,
+      24
+    ],
+    "pivot_is": "character visual center",
+    "start_sec": 0.0,
+    "z": "in front of the character"
+  },
+  "projectile": {
+    "sheet": "res://content/fx/water_shuriken/fx_water_shuriken_projectile.png",
+    "cell": [
+      56,
+      32
+    ],
+    "vframes": 12,
+    "fps": 30,
+    "loop": true,
+    "pivot_in_cell": [
+      40,
+      16
+    ],
+    "pivot_is": "projectile position (center of the star)",
+    "spawn_sec": 0.18,
+    "spawn_offset_from_character": [
+      10,
+      0
+    ],
+    "speed_px_s": 200,
+    "max_range_px": 112,
+    "hit_shape": {
+      "type": "circle",
+      "radius": 5
+    },
+    "on_max_range": "explode (play impact at the projectile position)"
+  },
+  "impact": {
+    "sheet": "res://content/fx/water_shuriken/fx_water_shuriken_impact.png",
+    "cell": [
+      56,
+      56
+    ],
+    "vframes": 18,
+    "fps": 30,
+    "loop": false,
+    "pivot_in_cell": [
+      28,
+      28
+    ],
+    "pivot_is": "impact point",
+    "splash": null,
+    "note": "single target: damage is dealt by the projectile hit; the puddle is baked in (gone by 0.5 s)"
+  },
+  "spin": "baked into the projectile frames (1 turn per loop). Do not rotate the sprite for spin.",
+  "cooldown_sec_suggestion": 0.35
+}

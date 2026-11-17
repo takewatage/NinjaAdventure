@@ -1,0 +1,82 @@
+{
+  "_doc": "Save-point campfire (16 px tiles). States: unlit -> ignite (once) -> lit (loop). Pivot = center of the fire pit on the ground.",
+  "tile_size": 16,
+  "pivot_in_cell": [
+    24,
+    36
+  ],
+  "footprint_tiles": [
+    2,
+    1
+  ],
+  "states": {
+    "unlit": {
+      "sheet": "res://content/prop/campfire/campfire_unlit.png",
+      "cell": [
+        48,
+        48
+      ],
+      "vframes": 1,
+      "fps": 30,
+      "loop": false,
+      "duration_sec": 0.033,
+      "note": "a single still frame"
+    },
+    "ignite": {
+      "sheet": "res://content/prop/campfire/campfire_ignite.png",
+      "cell": [
+        48,
+        48
+      ],
+      "vframes": 36,
+      "fps": 30,
+      "loop": false,
+      "duration_sec": 1.2,
+      "next": "lit",
+      "note": "the last frame matches lit frame 0, so switch to lit and start at frame 0"
+    },
+    "lit": {
+      "sheet": "res://content/prop/campfire/campfire_lit.png",
+      "cell": [
+        48,
+        48
+      ],
+      "vframes": 36,
+      "fps": 30,
+      "loop": true,
+      "duration_sec": 1.2
+    }
+  },
+  "flow": [
+    "start in unlit (not yet activated)",
+    "on first interaction / save: play ignite, then loop lit",
+    "already activated save points (from the save data): start directly in lit"
+  ],
+  "collision": {
+    "type": "rect",
+    "x": -12,
+    "y": -5,
+    "w": 24,
+    "h": 10,
+    "note": "the stone ring, relative to the pivot (StaticBody2D)"
+  },
+  "interact_area": {
+    "type": "circle",
+    "radius": 20,
+    "note": "Area2D for 'press to rest / save'"
+  },
+  "light_suggestion": {
+    "node": "PointLight2D",
+    "offset": [
+      0,
+      -6
+    ],
+    "color": "#ffb060",
+    "energy": 1.0,
+    "texture_scale": 2.5,
+    "flicker": "energy *= 0.85 + 0.15 * noise (about 8 Hz)",
+    "ignite": "tween energy 0 -> 1.0 over 0.75 s",
+    "unlit": "disabled"
+  },
+  "y_sort": "use the pivot (ground) as the sort point; flames above may cover a character standing behind it"
+}

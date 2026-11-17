@@ -1,0 +1,455 @@
+{
+  "_doc": "Jutsu wheel UI (radial selector). Hold the button to open, aim with the mouse, click (or release) to activate. All sizes in UI pixels at 1x: scale the CanvasLayer (x3 or x4) with nearest filtering.",
+  "input": {
+    "open": "hold the 'jutsu_wheel' action (e.g. Q / middle mouse / LB) for 0.15 s",
+    "select": "mouse direction from the wheel center",
+    "deadzone_px": 18,
+    "confirm": "left click on the hovered slot (also confirms on release if 'confirm_on_release' is true)",
+    "confirm_on_release": false,
+    "cancel": "release the hold button without clicking, or right click",
+    "slot_from_angle": "slot = posmod(roundi((mouse - center).angle() / (PI/4)), 8)  # same order as the 8-dir fx sheets"
+  },
+  "time": {
+    "time_scale_while_open": 0.2,
+    "note": "slow the game, not the UI (UI uses PROCESS_MODE_ALWAYS / unscaled delta)",
+    "screen_dim": {
+      "color": "#000000",
+      "alpha": 0.35
+    }
+  },
+  "anim": {
+    "open_sec": 0.12,
+    "open": "wheel scale 0.6 -> 1.0, alpha 0 -> 1 (ease out back)",
+    "slots_stagger_sec": 0.012,
+    "close_sec": 0.08,
+    "hover": "slot scale 1.0 -> 1.15 over 0.06 s + highlight wedge + hub pointer",
+    "confirm": "the chosen slot flashes white for 0.06 s and pops to 1.3, then the wheel closes"
+  },
+  "layout": {
+    "wheel_center": "screen center (or the player's screen position)",
+    "slot_radius": 56,
+    "slot_size": 32,
+    "icon_size": 24,
+    "icon_offset_in_slot": [
+      4,
+      4
+    ],
+    "label": "hovered jutsu name just below the wheel (Label, pixel font ~8 px, centered, y = wheel center + 80)",
+    "slots": [
+      {
+        "slot": 0,
+        "direction": "right",
+        "angle_deg": 0,
+        "center_from_wheel_center": [
+          56,
+          0
+        ],
+        "jutsu": "water_shuriken",
+        "name": "水遁・水手裏剣の術",
+        "icon_index": 2,
+        "data": "res://content/fx/water_shuriken/water_shuriken.json",
+        "locked": false,
+        "element": "水"
+      },
+      {
+        "slot": 1,
+        "direction": "down_right",
+        "angle_deg": 45,
+        "center_from_wheel_center": [
+          40,
+          40
+        ],
+        "jutsu": "katon",
+        "name": "火遁・息吹の術",
+        "icon_index": 3,
+        "data": "res://content/fx/katon/katon.json",
+        "locked": false,
+        "element": "火"
+      },
+      {
+        "slot": 2,
+        "direction": "down",
+        "angle_deg": 90,
+        "center_from_wheel_center": [
+          0,
+          56
+        ],
+        "jutsu": "raiton",
+        "name": "雷遁・雷轟の術",
+        "icon_index": 4,
+        "data": "res://content/fx/raiton/raiton.json",
+        "locked": false,
+        "element": "雷"
+      },
+      {
+        "slot": 3,
+        "direction": "down_left",
+        "angle_deg": 135,
+        "center_from_wheel_center": [
+          -40,
+          40
+        ],
+        "jutsu": "kirigakure",
+        "name": "霧隠れの術",
+        "icon_index": 5,
+        "data": "res://content/fx/kirigakure/kirigakure.json",
+        "locked": false,
+        "element": "未定"
+      },
+      {
+        "slot": 4,
+        "direction": "left",
+        "angle_deg": 180,
+        "center_from_wheel_center": [
+          -56,
+          0
+        ],
+        "jutsu": "fuuton",
+        "name": "風遁・陣風",
+        "icon_index": 6,
+        "data": "res://content/fx/fuuton/fuuton.json",
+        "locked": false,
+        "element": "風"
+      },
+      {
+        "slot": 5,
+        "direction": "up_left",
+        "angle_deg": 225,
+        "center_from_wheel_center": [
+          -40,
+          -40
+        ],
+        "jutsu": "locked",
+        "name": "未習得",
+        "icon_index": 7,
+        "data": null,
+        "locked": true,
+        "element": null
+      },
+      {
+        "slot": 6,
+        "direction": "up",
+        "angle_deg": 270,
+        "center_from_wheel_center": [
+          0,
+          -56
+        ],
+        "jutsu": "kenjutsu",
+        "name": "三段斬り",
+        "icon_index": 0,
+        "data": "res://content/fx/combo3/combo3_8dir.json",
+        "locked": false,
+        "element": "基本攻撃",
+        "note": "basic attack (no talisman, always usable). It may move out of the wheel to its own button; the slot then becomes another jutsu."
+      },
+      {
+        "slot": 7,
+        "direction": "up_right",
+        "angle_deg": 315,
+        "center_from_wheel_center": [
+          40,
+          -40
+        ],
+        "jutsu": "fireball",
+        "name": "火炎弾の術",
+        "icon_index": 1,
+        "data": "res://content/fx/fireball/fireball.json",
+        "locked": false,
+        "element": "火"
+      }
+    ]
+  },
+  "sprites": {
+    "icons": {
+      "sheet": "res://content/ui/jutsu_wheel/ui_jutsu_icons.png",
+      "cell": [
+        24,
+        24
+      ],
+      "hframes": 8,
+      "order": [
+        "kenjutsu",
+        "fireball",
+        "water_shuriken",
+        "katon",
+        "raiton",
+        "kirigakure",
+        "fuuton",
+        "locked"
+      ]
+    },
+    "slot": {
+      "sheet": "res://content/ui/jutsu_wheel/ui_wheel_slot.png",
+      "cell": [
+        32,
+        32
+      ],
+      "hframes": 4,
+      "states": [
+        "normal",
+        "hover",
+        "active",
+        "locked"
+      ]
+    },
+    "bg": {
+      "sheet": "res://content/ui/jutsu_wheel/ui_wheel_bg.png",
+      "size": [
+        168,
+        168
+      ],
+      "center": [
+        84,
+        84
+      ]
+    },
+    "highlight": {
+      "sheet": "res://content/ui/jutsu_wheel/ui_wheel_highlight.png",
+      "cell": [
+        168,
+        168
+      ],
+      "hframes": 8,
+      "center": [
+        84,
+        84
+      ],
+      "frame": "= hovered slot"
+    },
+    "hub": {
+      "sheet": "res://content/ui/jutsu_wheel/ui_wheel_hub.png",
+      "cell": [
+        48,
+        48
+      ],
+      "hframes": 9,
+      "center": [
+        24,
+        24
+      ],
+      "frame": "0-7 = pointing at slot k, 8 = nothing hovered"
+    }
+  },
+  "hud": {
+    "note": "show the active jutsu bottom-left: slot sprite state 'active' + its icon (same sheets)"
+  },
+  "progression": {
+    "_doc": "Level and talisman (ofuda, ammo) display. Both are optional per jutsu: a jutsu with no levels / no talisman just shows no badge, so the slot never looks broken. The whole talisman system can be switched off.",
+    "talisman_system_enabled": true,
+    "status": "adopted (see 忍術システム仕様.md): every jutsu has its own talisman stock; basic attacks use none",
+    "fields_per_jutsu": {
+      "level": "int or null (null = no level badge)",
+      "max_level": "int (at max the badge turns purple)",
+      "uses_talisman": "bool (false = no ammo badge, e.g. the basic attack kenjutsu)",
+      "talisman": "how many the player holds (shared stock or per jutsu, game decides)",
+      "per_cast": "talismans used per cast"
+    },
+    "sample_state": {
+      "kenjutsu": {
+        "level": 2,
+        "max_level": 5,
+        "uses_talisman": false
+      },
+      "fireball": {
+        "level": 3,
+        "max_level": 5,
+        "uses_talisman": true,
+        "talisman": 24,
+        "per_cast": 1
+      },
+      "water_shuriken": {
+        "level": 1,
+        "max_level": 5,
+        "uses_talisman": true,
+        "talisman": 12,
+        "per_cast": 1
+      },
+      "katon": {
+        "level": 4,
+        "max_level": 5,
+        "uses_talisman": true,
+        "talisman": 0,
+        "per_cast": 2
+      },
+      "raiton": {
+        "level": 1,
+        "max_level": 3,
+        "uses_talisman": true,
+        "talisman": 5,
+        "per_cast": 1
+      },
+      "kirigakure": {
+        "level": 2,
+        "max_level": 3,
+        "uses_talisman": true,
+        "talisman": 4,
+        "per_cast": 1
+      },
+      "fuuton": {
+        "level": 5,
+        "max_level": 5,
+        "uses_talisman": true,
+        "talisman": 3,
+        "per_cast": 1
+      },
+      "locked": null
+    },
+    "badges": {
+      "sheet": "res://content/ui/jutsu_wheel/ui_wheel_badges.png",
+      "regions": {
+        "lv_1digit": {
+          "region": [
+            0,
+            0,
+            9,
+            10
+          ],
+          "text_at": [
+            2,
+            2
+          ]
+        },
+        "lv_2digit": {
+          "region": [
+            10,
+            0,
+            13,
+            10
+          ],
+          "text_at": [
+            2,
+            2
+          ]
+        },
+        "lv_max_1digit": {
+          "region": [
+            24,
+            0,
+            9,
+            10
+          ],
+          "text_at": [
+            2,
+            2
+          ]
+        },
+        "lv_max_2digit": {
+          "region": [
+            34,
+            0,
+            13,
+            10
+          ],
+          "text_at": [
+            2,
+            2
+          ]
+        },
+        "ammo_1digit": {
+          "region": [
+            48,
+            0,
+            14,
+            10
+          ],
+          "text_at": [
+            8,
+            2
+          ]
+        },
+        "ammo_2digit": {
+          "region": [
+            63,
+            0,
+            18,
+            10
+          ],
+          "text_at": [
+            8,
+            2
+          ]
+        },
+        "ammo_3digit": {
+          "region": [
+            82,
+            0,
+            22,
+            10
+          ],
+          "text_at": [
+            8,
+            2
+          ]
+        },
+        "ammo_empty_1digit": {
+          "region": [
+            105,
+            0,
+            14,
+            10
+          ],
+          "text_at": [
+            8,
+            2
+          ]
+        },
+        "ammo_empty_2digit": {
+          "region": [
+            120,
+            0,
+            18,
+            10
+          ],
+          "text_at": [
+            8,
+            2
+          ]
+        },
+        "ammo_empty_3digit": {
+          "region": [
+            139,
+            0,
+            22,
+            10
+          ],
+          "text_at": [
+            8,
+            2
+          ]
+        }
+      },
+      "level_badge": {
+        "anchor": "slot top-left",
+        "offset": [
+          -3,
+          -3
+        ],
+        "variant": "lv_ (1/2 digit) or lv_max_ at max level",
+        "text_color": "#fff0b0 / max #fad2ff"
+      },
+      "ammo_badge": {
+        "anchor": "slot bottom-right",
+        "sticks_out": [
+          3,
+          3
+        ],
+        "variant": "ammo_ (1/2/3 digit), ammo_empty_ when talisman < per_cast",
+        "text_color": "#e6ecf8 / empty #ff786e",
+        "cap": 999
+      },
+      "empty_rule": "talisman < per_cast: red badge, icon modulate alpha 0.45, still selectable (casting fails with a 'no talismans' sound / shake)"
+    },
+    "font": {
+      "file": "res://content/ui/jutsu_wheel/ui_font_3x5.fnt",
+      "glyphs": "0-9 L v . x / M A",
+      "size_px": 5,
+      "advance_px": 4,
+      "note": "BMFont: Godot imports it as a FontFile. Use it for the badge numbers; draw the jutsu names with a Japanese pixel font."
+    },
+    "label_format": {
+      "name_line": "Lv.{level} {name}  (drop 'Lv.n' when level is null)",
+      "talisman_line": "術符 ×{talisman}（{per_cast}枚/回）  (hide the whole line when uses_talisman is false or the system is off)"
+    },
+    "hud": "bottom-left: active slot + the same badges + name; the talisman count can also sit under it"
+  }
+}
