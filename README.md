@@ -13,14 +13,17 @@ Zelda-like 2D top-down RPG (Godot 4.7 / GDScript).
   - 三段攻撃コンボ（左クリック / Space）: なぎ払い → 逆なぎ払い → 突き。攻撃方向に踏み込む（1・2段目5px、3段目10px）。数値は `content/fx/combo3/combo3_8dir.json` が正
   - 攻撃はマウスカーソルの方向（各段の開始時に照準）。当たり判定・踏み込みは正確な角度。エフェクトは最寄りの8方向の絵を、残りの角度（最大±22.5°）だけ回転させて判定に合わせる。キャラの絵は最寄りの方向（4方向なので斜めは上下の絵）
   - エフェクトの回転が見た目に合わない場合: インスペクターで `rotate_fx_to_aim` をオフ、`snap_aim_to_8_directions` をオンにすると、判定のほうを8方向に揃える
-- 被ダメージ: HP6（`max_life`）。被弾で Hit.png のアニメ＋ノックバック（0.3秒操作不可）→ 1秒無敵（点滅）。HP0で操作不能（灰色で停止）。回避中は無敵
+- 被ダメージ: HP6（`max_life`）。被弾で Hit.png のアニメ＋ノックバック（0.3秒操作不可）→ 1秒無敵（点滅）。HP0で操作不能になり、Hit.png → Dead.png（1列×2コマ）＋土煙（`DeathBurst`）→ 頭上で星が回り続ける（`DizzyStars`）の順。カメラは1.4倍までズーム（`death_zoom`）。回避中は無敵
+- 体力表示: 左上のハート（`system/ui/player_ui.gd`、`content/ui/heart.png`）。ハート1個 = HP2（`life_per_heart`）なので HP6 = ハート3個、1ダメージで半分減る
+- 死亡後: 2秒待って暗転 → 今のマップを読み直して、マップの初期位置・HP満タンでやり直し（`world.gd` の `_on_player_died`）。セーブができたら、最後の焚き火・家から再開に変える
+- 体力表示と死亡後のやり直しは `world.tscn` 経由で動く（`test.tscn` 単体には HUD が無い）
 - 試験場 `content/map/map_test.tscn` で NinjaMain を操作キャラに設定（壺1・草2・スライム1を配置）
 - 敵 AI の土台（Beehave 2.9.3 のビヘイビアツリー）
   - スライム `content/enemy/Slime2/slime2.tscn`: うろつく → プレイヤー発見で追跡 → 射程内で「体当たり(重み3) / 逃げる(重み1)」をランダム選択 → 見失うと再びうろつく。被弾でノックバック＋硬直、HP3で死亡。体に触れるだけでもダメージ（`slime2.tres` の `contact_damage`）
   - 体当たりは 予備動作（つぶれ＋赤み）→ 突進（約66px）→ 硬直 → クールダウン。数値は `slime2_tackle.tres`
 
 ### これから
-- プレイヤーの死亡後の処理（リスタート等）と HP 表示 UI。`Dead.png` は1列のシートで SheetAnimator の4列前提と合わないため未使用
+- 術システム（火遁・息吹、水遁・水手裏剣から）。素材は `content/fx/`、術ホイールは `content/ui/jutsu_wheel/`
 - テレポーター対応（`Teleporter` は `Character` 型を前提にしており、`Player` は未対応）
 - アイテム取得（`PickUpItem` との接触）
 - 敵の2体目（使い回しの検証）、壁越しに見つけないための視線チェック、NavigationAgent2D による経路探索
@@ -37,10 +40,11 @@ Zelda-like 2D top-down RPG (Godot 4.7 / GDScript).
 
 | 素材 | 場所 | 用途 |
 |---|---|---|
-| 主人公スプライト | `content/character/ninja_main/*.png`（32×32、列=向き・行=コマ） | Idle / Walk / Attack / Roll / Hit を使用中 |
+| 主人公スプライト | `content/character/ninja_main/*.png`（32×32、列=向き・行=コマ） | Idle / Walk / Attack / Roll / Hit / Dead を使用中 |
 | 三段攻撃エフェクト | `content/fx/combo3/`（8方向版 `*_8dir*` を使用中。4方向版は未使用） | 攻撃エフェクト・当たり判定データ |
 | スライム | `content/enemy/Slime2/Slime2.png`（16×16、列=向き・行=コマ） | Slime2 の歩き・待機 |
 | 影 | `content/character/Shadow.png` | 主人公・敵の足元 |
+| 死亡エフェクト | `content/fx/death/`（`death.json`） | 倒れた瞬間の土煙（`fx_death_burst.png`）と頭上の星（`fx_dizzy_stars.png`）を使用中 |
 
 ## 敵の作り方（構造）
 

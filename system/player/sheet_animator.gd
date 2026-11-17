@@ -3,6 +3,8 @@ class_name SheetAnimator
 ## Plays a "column = direction, row = frame" sprite sheet (ninja_main / combo3 layout).
 ## 4 columns: 0=down, 1=up, 2=left, 3=right (same order as SpriteCharacter.FrameDirection).
 ## 8 columns (combo3_8dir): 0=right, then clockwise every 45 degrees.
+## A sheet narrower than `columns` cells (e.g. Dead.png, 1 column) is shown with
+## its last column for any direction.
 
 signal finished
 
@@ -26,7 +28,7 @@ var _playing: bool = false
 func play(sheet: Texture2D, rows: PackedInt32Array, frame_secs: PackedFloat32Array, loop: bool) -> void:
 	if sheet != texture:
 		texture = sheet
-		hframes = columns
+		hframes = clampi(int(sheet.get_width()) / cell_size.x, 1, columns)
 		vframes = maxi(1, int(sheet.get_height()) / cell_size.y)
 	_rows = rows
 	_frame_secs = frame_secs
@@ -73,4 +75,4 @@ func _process(delta: float) -> void:
 func _apply_frame() -> void:
 	if texture == null:
 		return
-	frame_coords = Vector2i(column, _rows[_index])
+	frame_coords = Vector2i(mini(column, hframes - 1), _rows[_index])

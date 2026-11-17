@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://system/player/player.gd" id="1_player"]
 [ext_resource type="JSON" path="res://content/fx/combo3/combo3_8dir.json" id="2_combo"]
@@ -13,6 +13,9 @@
 [ext_resource type="Script" path="res://system/damage/damage_area.gd" id="11_damage_area"]
 [ext_resource type="Script" path="res://system/damage/resource_damage.gd" id="12_damage"]
 [ext_resource type="Texture2D" path="res://content/character/ninja_main/Hit.png" id="13_hit"]
+[ext_resource type="Texture2D" path="res://content/character/ninja_main/Dead.png" id="14_dead"]
+[ext_resource type="Texture2D" path="res://content/fx/death/fx_dizzy_stars.png" id="15_dizzy"]
+[ext_resource type="Texture2D" path="res://content/fx/death/fx_death_burst.png" id="16_burst"]
 
 [sub_resource type="Resource" id="Resource_damage"]
 script = ExtResource("12_damage")
@@ -38,6 +41,7 @@ walk_sheet = ExtResource("5_walk")
 attack_sheet = ExtResource("6_attack")
 dodge_sheet = ExtResource("7_roll")
 hurt_sheet = ExtResource("13_hit")
+dead_sheet = ExtResource("14_dead")
 
 [node name="Hitbox" type="Area2D" parent="."]
 collision_layer = 4
@@ -88,3 +92,21 @@ polygon = PackedVector2Array(11.4, -25.6, 18.2, -21.3, 23.5, -15.2, 26.8, -8, 28
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(3.5, 3.5)
+
+[node name="DeathBurst" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(0, -5)
+texture = ExtResource("16_burst")
+vframes = 17
+script = ExtResource("10_anim")
+cell_size = Vector2i(72, 72)
+columns = 1
+
+[node name="DizzyStars" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(0, -13)
+texture = ExtResource("15_dizzy")
+vframes = 24
+script = ExtResource("10_anim")
+cell_size = Vector2i(32, 12)
+columns = 1

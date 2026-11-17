@@ -1,0 +1,17 @@
+[remap]
+
+importer="font_data_bmfont"
+type="FontFile"
+uid="uid://vcao4h6853n2"
+path="res://.godot/imported/ui_font_3x5.fnt-f4c797d823c487616eaaa105c5bbc9f9.fontdata"
+
+[deps]
+
+source_file="res://content/ui/jutsu_wheel/ui_font_3x5.fnt"
+dest_files=["res://.godot/imported/ui_font_3x5.fnt-f4c797d823c487616eaaa105c5bbc9f9.fontdata"]
+
+[params]
+
+fallbacks=[]
+compress=true
+scaling_mode=2

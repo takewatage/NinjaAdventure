@@ -59,6 +59,17 @@ const AIM_RELEASE_GRACE: float = 0.08
 @export var attack_sheet: Texture2D
 @export var dodge_sheet: Texture2D
 @export var hurt_sheet: Texture2D
+## 1 column (no direction), rows = frames. Played once when life reaches 0.
+@export var dead_sheet: Texture2D
+@export var dead_frame_sec: float = 0.25
+## Death effects (content/fx/death/death.json): a dust burst when the body
+## hits the ground, then stars spinning over the head.
+@export var burst_frame_sec: float = 1.0 / 30.0
+@export var dizzy_frame_sec: float = 1.0 / 30.0
+@export_category("death camera")
+## The camera zooms in on the player by this factor when they die.
+@export var death_zoom: float = 1.4
+@export var death_zoom_time: float = 0.8
 @export var idle_frame_sec: float = 0.25
 @export var walk_frame_sec: float = 0.15
 
@@ -104,6 +115,8 @@ var _invincible_left: float = 0.0
 @onready var attack_area: DamageArea = $AttackArea
 @onready var attack_shape: CollisionPolygon2D = $AttackArea/Shape
 @onready var camera: Camera2D = $Camera2D
+@onready var death_burst: SheetAnimator = get_node_or_null("DeathBurst") as SheetAnimator
+@onready var dizzy_stars: SheetAnimator = get_node_or_null("DizzyStars") as SheetAnimator
 
 
 func _ready() -> void:
@@ -298,14 +311,50 @@ func _update_invincibility(delta: float) -> void:
         sprite.visible = int(_invincible_left * 20.0) % 2 == 0
 
 
-## No control any more. Keeps the last hurt frame (Dead.png is a different layout).
+## No control any more. Order: the Hit animation (already started by the
+## damage) -> Dead animation + dust burst -> dizzy stars. The camera zooms in.
 func _die() -> void:
     state = State.DEAD
     _invincible_left = 0.0
     sprite.visible = true
-    sprite.modulate = Color(0.6, 0.6, 0.6)
+    if hurt_sheet and sprite.is_playing_sheet(hurt_sheet):
+        sprite.finished.connect(_play_dead, CONNECT_ONE_SHOT)
+    else:
+        _play_dead()
     hitbox.set_deferred("monitorable", false)
+    if camera.enabled and death_zoom != 1.0:
+        var tween: Tween = create_tween()
+        tween.tween_property(camera, "zoom", camera.zoom * death_zoom, death_zoom_time) \
+            .set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
     died.emit()
+
+
+## The body hits the ground: Dead animation and the dust burst together.
+func _play_dead() -> void:
+    sprite.flip_h = false
+    if dead_sheet:
+        sprite.play_uniform(dead_sheet, _frame_count(dead_sheet), dead_frame_sec, false)
+    else:
+        sprite.modulate = Color(0.6, 0.6, 0.6)
+    if death_burst:
+        death_burst.visible = true
+        death_burst.play_uniform(death_burst.texture, death_burst.vframes, burst_frame_sec, false)
+        death_burst.finished.connect(_on_death_burst_finished, CONNECT_ONE_SHOT)
+    else:
+        _show_dizzy_stars()
+
+
+func _on_death_burst_finished() -> void:
+    death_burst.visible = false
+    _show_dizzy_stars()
+
+
+## After the burst. Loops until the map is reloaded.
+func _show_dizzy_stars() -> void:
+    if dizzy_stars == null:
+        return
+    dizzy_stars.visible = true
+    dizzy_stars.play_uniform(dizzy_stars.texture, dizzy_stars.vframes, dizzy_frame_sec, true)
 
 
 func _cancel_attack() -> void:

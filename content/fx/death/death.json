@@ -1,0 +1,41 @@
+{
+  "_doc": "Death effects for 16 px characters (adopted: the burst and the dizzy stars only). Character animation, hitstop, knockback and timing are done on the Godot side.",
+  "burst": {
+    "sheet": "res://content/fx/death/fx_death_burst.png",
+    "cell": [
+      72,
+      72
+    ],
+    "hframes": 1,
+    "vframes": 17,
+    "fps": 30,
+    "loop": false,
+    "pivot_in_cell": [
+      36,
+      36
+    ],
+    "pivot_is": "character visual center (on the ground where it lands)",
+    "when": "the moment the body hits the ground (Dead frame 0)"
+  },
+  "dizzy": {
+    "sheet": "res://content/fx/death/fx_dizzy_stars.png",
+    "cell": [
+      32,
+      12
+    ],
+    "vframes": 24,
+    "fps": 30,
+    "loop": true,
+    "pivot_in_cell": [
+      16,
+      6
+    ],
+    "offset_from_character": [
+      0,
+      -8
+    ],
+    "note": "over the head of the Dead pose",
+    "when": "after the burst, loop until game over / respawn"
+  },
+  "reuse_for_enemies": "both work for any 16 px character"
+}

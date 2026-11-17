@@ -13,12 +13,20 @@ var map:Map
 @onready var raylight: GPUParticles2D = %Raylight
 @onready var fog: TextureRect = %Fog
 
-@onready var transition: ColorRect = %Transition
+@onready var transition: Transition = %Transition
 @onready var music: AudioStreamPlayer = %Music
 @onready var color_correction: ColorRect = %ColorCorrection
 @onready var camera_grid: CameraGrid = %CameraGrid
 @onready var pivot: Node2D = %Pivot
 @onready var player_ui: Control = %PlayerUi
+
+
+## Seconds the player lies defeated before the screen fades out.
+@export var death_wait: float = 2.0
+
+## The map currently loaded, so it can be reloaded when the player dies.
+var _map_scene: PackedScene
+var _player: Player
 
 
 func _ready():
@@ -33,11 +41,35 @@ func on_camera_animation_finished():
 func generate_map(map_scene:PackedScene):
     if map:
         map.queue_free()
-    map = starting_map.instantiate()
+    _map_scene = map_scene
+    map = map_scene.instantiate()
     add_child(map)
-    print(map.environment_area)
     if map.environment_area.get_child_count() > 0:
         map.environment_area.environment_changed.connect(apply_environment)
+    _bind_player()
+
+
+## Connects the player of the new map to the HUD and to the death handling.
+func _bind_player() -> void:
+    _player = null
+    for node in get_tree().get_nodes_in_group("player"):
+        if node is Player and map.is_ancestor_of(node):
+            _player = node
+            break
+    if _player == null:
+        return
+    player_ui.resource_life = _player.life
+    _player.died.connect(_on_player_died)
+
+
+## Defeat: wait, fade to black, reload the map (the player starts again at the
+## map's start with full life), fade back in.
+## TODO: once saving exists, restart from the last campfire / home instead.
+func _on_player_died() -> void:
+    await get_tree().create_timer(death_wait).timeout
+    await transition.play(Transition.Type.FADE_IN)
+    generate_map(_map_scene)
+    await transition.play(Transition.Type.FADE_OUT)
 
 
 func apply_environment(resource_environment:ResourceEnvironment):
@@ -61,4 +93,4 @@ func apply_environment(resource_environment:ResourceEnvironment):
 
 
 func play_transition(type:Transition.Type):
-    transition
+    await transition.play(type)
