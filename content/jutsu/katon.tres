@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ResourceJutsu" format=3]
+
+[ext_resource type="Script" path="res://system/jutsu/casters/katon_caster.gd" id="1_01hcu"]
+[ext_resource type="Script" path="res://system/damage/resource_damage.gd" id="2_7ct8i"]
+[ext_resource type="JSON" path="res://content/fx/katon/katon.json" id="3_oowig"]
+[ext_resource type="Script" path="res://system/jutsu/resource_jutsu.gd" id="4_85j4d"]
+
+[sub_resource type="Resource" id="Resource_p1gme"]
+script = ExtResource("2_7ct8i")
+
+[resource]
+script = ExtResource("4_85j4d")
+id = &"katon"
+display_name = "火遁・息吹の術"
+element = "火"
+icon_index = 3
+caster = ExtResource("1_01hcu")
+data = ExtResource("3_oowig")
+damage = SubResource("Resource_p1gme")

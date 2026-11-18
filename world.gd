@@ -19,6 +19,7 @@ var map:Map
 @onready var camera_grid: CameraGrid = %CameraGrid
 @onready var pivot: Node2D = %Pivot
 @onready var player_ui: Control = %PlayerUi
+@onready var jutsu_ui: JutsuUi = %JutsuUi
 
 
 ## Seconds the player lies defeated before the screen fades out.
@@ -57,8 +58,10 @@ func _bind_player() -> void:
             _player = node
             break
     if _player == null:
+        jutsu_ui.player = null
         return
     player_ui.resource_life = _player.life
+    jutsu_ui.player = _player
     _player.died.connect(_on_player_died)
 
 

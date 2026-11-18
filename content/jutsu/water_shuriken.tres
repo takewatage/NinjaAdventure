@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="ResourceJutsu" format=3]
+
+[ext_resource type="Script" path="res://system/jutsu/casters/water_shuriken_caster.gd" id="1_luijy"]
+[ext_resource type="Script" path="res://system/damage/resource_damage.gd" id="2_aouuk"]
+[ext_resource type="JSON" path="res://content/fx/water_shuriken/water_shuriken.json" id="3_07qs6"]
+[ext_resource type="JSON" path="res://content/fx/water_shuriken/water_shuriken_charge.json" id="4_5eq7x"]
+[ext_resource type="Script" path="res://system/jutsu/resource_jutsu.gd" id="5_mbhqg"]
+
+[sub_resource type="Resource" id="Resource_48720"]
+script = ExtResource("2_aouuk")
+push_force = 30
+
+[sub_resource type="Resource" id="Resource_mm4ka"]
+script = ExtResource("2_aouuk")
+amount = 2
+push_force = 60
+
+[resource]
+script = ExtResource("5_mbhqg")
+id = &"water_shuriken"
+display_name = "水遁・水手裏剣の術"
+element = "水"
+icon_index = 2
+max_stock = 30
+caster = ExtResource("1_luijy")
+data = ExtResource("3_07qs6")
+data_extra = ExtResource("4_5eq7x")
+damage = SubResource("Resource_48720")
+damage_extra = SubResource("Resource_mm4ka")

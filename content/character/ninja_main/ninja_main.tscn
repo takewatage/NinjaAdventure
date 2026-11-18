@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://system/player/player.gd" id="1_player"]
 [ext_resource type="JSON" path="res://content/fx/combo3/combo3_8dir.json" id="2_combo"]
@@ -16,6 +16,7 @@
 [ext_resource type="Texture2D" path="res://content/character/ninja_main/Dead.png" id="14_dead"]
 [ext_resource type="Texture2D" path="res://content/fx/death/fx_dizzy_stars.png" id="15_dizzy"]
 [ext_resource type="Texture2D" path="res://content/fx/death/fx_death_burst.png" id="16_burst"]
+[ext_resource type="Resource" path="res://content/jutsu/player_jutsu_book.tres" id="17_book"]
 
 [sub_resource type="Resource" id="Resource_damage"]
 script = ExtResource("12_damage")
@@ -42,6 +43,7 @@ attack_sheet = ExtResource("6_attack")
 dodge_sheet = ExtResource("7_roll")
 hurt_sheet = ExtResource("13_hit")
 dead_sheet = ExtResource("14_dead")
+jutsu_book = ExtResource("17_book")
 
 [node name="Hitbox" type="Area2D" parent="."]
 collision_layer = 4

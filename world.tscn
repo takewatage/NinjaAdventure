@@ -1,4 +1,4 @@
-[gd_scene load_steps=42 format=3 uid="uid://c7j4hgkdbtapk"]
+[gd_scene load_steps=43 format=3 uid="uid://c7j4hgkdbtapk"]
 
 [ext_resource type="Script" path="res://world.gd" id="1_804hp"]
 [ext_resource type="PackedScene" uid="uid://cdc0jr72ch7jr" path="res://content/map/map_test.tscn" id="2_d7dii"]
@@ -20,6 +20,7 @@
 [ext_resource type="Script" path="res://system/transition/transition.gd" id="20_5rxny"]
 [ext_resource type="Material" uid="uid://d388iuq2hfgth" path="res://system/color_correction/material.tres" id="28_nkm27"]
 [ext_resource type="Script" path="res://system/color_correction/color_correction.gd" id="29_12dcn"]
+[ext_resource type="PackedScene" path="res://system/ui/jutsu/jutsu_ui.tscn" id="30_jutsu"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6dfye"]
 shader = ExtResource("16_fmd6i")
@@ -272,6 +273,9 @@ visible = false
 [node name="InventoryHud" type="Node" parent="Hud"]
 unique_name_in_owner = true
 script = ExtResource("17_4pt6h")
+
+[node name="JutsuUi" parent="Hud" instance=ExtResource("30_jutsu")]
+unique_name_in_owner = true
 
 [node name="ScreenFxLayer" type="CanvasLayer" parent="."]
 layer = 10

@@ -24,5 +24,6 @@ func _ready() -> void:
     monitoring = false
 
 
+## Deferred: it is often called from inside a physics signal (a hit that kills).
 func disable():
-    monitorable = false
+    set_deferred("monitorable", false)

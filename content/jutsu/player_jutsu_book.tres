@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ResourceJutsuBook" format=3]
+
+[ext_resource type="Script" path="res://system/jutsu/resource_jutsu.gd" id="1_xw4ta"]
+[ext_resource type="Resource" path="res://content/jutsu/katon.tres" id="2_1d1lh"]
+[ext_resource type="Resource" path="res://content/jutsu/water_shuriken.tres" id="3_dxjta"]
+[ext_resource type="Script" path="res://system/jutsu/resource_jutsu_book.gd" id="4_1h5wq"]
+
+[resource]
+script = ExtResource("4_1h5wq")
+learned = Array[ExtResource("1_xw4ta")]([ExtResource("2_1d1lh"), ExtResource("3_dxjta")])
+stock = Dictionary[StringName, int]({
+&"katon": 10,
+&"water_shuriken": 15
+})
+selected_id = &"katon"

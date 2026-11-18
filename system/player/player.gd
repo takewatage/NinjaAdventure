@@ -1,8 +1,8 @@
 @icon("../character/icon_character.png")
 extends CharacterBody2D
 class_name Player
-## Top-down player: idle / walk / dodge (roll) / 3-hit attack combo / hurt / dead.
-## Driven by HumanController (move_vector, aim_point, attack(), dodge()).
+## Top-down player: idle / walk / dodge (roll) / 3-hit attack combo / jutsu / hurt / dead.
+## Driven by HumanController (move_vector, aim_point, attack(), dodge(), cast_jutsu(), jutsu_held).
 ## Each hit aims at aim_point (the mouse cursor) at the moment it starts. The hit shape
 ## and lunge use the exact angle; the fx uses the nearest of 8 columns, rotated by the
 ## remaining gap (rotate_fx_to_aim). The 4-direction character sprite uses the column
@@ -11,7 +11,7 @@ class_name Player
 
 signal died
 
-enum State { MOVE, ATTACK, DODGE, HURT, DEAD }
+enum State { MOVE, ATTACK, DODGE, HURT, DEAD, CAST }
 ## Character sheet columns (column = direction).
 enum Dir { DOWN, UP, LEFT, RIGHT }
 
@@ -53,6 +53,12 @@ const AIM_RELEASE_GRACE: float = 0.08
 ## looks bad, turn this off and turn snap_aim_to_8_directions on instead.
 @export var rotate_fx_to_aim: bool = true
 
+@export_category("jutsu")
+## Known jutsu and talismans at the start (duplicated on _ready).
+@export var jutsu_book: ResourceJutsuBook
+## Where jutsu come out: the character's visual center.
+@export var cast_origin: Vector2 = Vector2(0, -5)
+
 @export_category("sprites")
 @export var idle_sheet: Texture2D
 @export var walk_sheet: Texture2D
@@ -84,6 +90,10 @@ var aim_point: Vector2 = Vector2.INF
 var move_column: int = 2
 var state: State = State.MOVE
 var life: ResourceLife
+## This player's jutsu book (a copy of jutsu_book).
+var book: ResourceJutsuBook
+## The jutsu button is held. Set by HumanController every frame.
+var jutsu_held: bool = false
 
 var _state_time: float = 0.0
 var _attack_pressed: bool = false
@@ -108,6 +118,8 @@ var _combo_reset_left: float = 0.0
 var _fx_spawned: bool = false
 var _attack_active: bool = false
 var _invincible_left: float = 0.0
+var _cast_pressed: bool = false
+var _caster: JutsuCaster
 
 @onready var sprite: SheetAnimator = $Sprite
 @onready var fx: SheetAnimator = $Fx
@@ -129,6 +141,12 @@ func _ready() -> void:
     life.life = max_life
     hitbox.team = team
     hitbox.damage_received.connect(_on_damage_received)
+    if jutsu_book:
+        book = jutsu_book.duplicate()
+        book.learned = jutsu_book.learned.duplicate()
+        book.stock = jutsu_book.stock.duplicate()
+    else:
+        book = ResourceJutsuBook.new()
     fx.visible = false
     fx.finished.connect(_on_fx_finished)
     # PlayerAssignor (a child) has already added us to "player" by now.
@@ -150,6 +168,11 @@ func dodge() -> void:
     _dodge_pressed = true
 
 
+## Called by HumanController when the jutsu button is pressed.
+func cast_jutsu() -> void:
+    _cast_pressed = true
+
+
 func _physics_process(delta: float) -> void:
     _dodge_cooldown_left = maxf(0.0, _dodge_cooldown_left - delta)
     if _combo_reset_left > 0.0:
@@ -169,10 +192,13 @@ func _physics_process(delta: float) -> void:
             _process_hurt(delta)
         State.DEAD:
             velocity = velocity.move_toward(Vector2.ZERO, deceleration * delta)
+        State.CAST:
+            _process_cast(delta)
     _update_invincibility(delta)
 
     _attack_pressed = false
     _dodge_pressed = false
+    _cast_pressed = false
     move_and_slide()
 
 
@@ -223,6 +249,10 @@ func _process_move(delta: float) -> void:
     if _attack_pressed and not _hits.is_empty():
         _start_hit(_next_hit)
         return
+    if _cast_pressed:
+        _start_cast()
+        if state == State.CAST:
+            return
 
     if move_vector != Vector2.ZERO:
         _set_facing(_vector_to_dir(move_vector))
@@ -276,6 +306,7 @@ func _on_damage_received(damage: ResourceDamage, at_pos: Vector2) -> void:
     if is_invincible():
         return
     _cancel_attack()
+    _cancel_cast()
     var push_dir: Vector2 = at_pos.direction_to(global_position)
     if push_dir == Vector2.ZERO:
         push_dir = -DIR_VECTORS[facing]
@@ -362,6 +393,73 @@ func _cancel_attack() -> void:
     fx.visible = false
     _combo_buffered = false
     _next_hit = 0
+
+
+# --- jutsu --------------------------------------------------------------
+
+func _start_cast() -> void:
+    var jutsu: ResourceJutsu = book.get_selected()
+    if jutsu == null or jutsu.caster == null:
+        return
+    if not book.consume(jutsu):
+        return  # Not enough talismans: the book emits dry_fired (the UI reacts).
+    state = State.CAST
+    _state_time = 0.0
+    var angle: float = _cast_aim_angle()
+    _set_facing(_vector_to_dir(Vector2.from_angle(angle)))
+    _caster = jutsu.caster.new() as JutsuCaster
+    _caster.position = cast_origin
+    _caster.setup(self, jutsu, angle)
+    _caster.finished.connect(_on_cast_finished.bind(_caster))
+    add_child(_caster)
+    _caster.begin()
+
+
+func _process_cast(delta: float) -> void:
+    if _dodge_pressed and _dodge_cooldown_left <= 0.0:
+        _cancel_cast()
+        _start_dodge()
+        return
+    if _caster == null:
+        state = State.MOVE
+        return
+    if _caster.can_turn:
+        var angle: float = _cast_aim_angle()
+        _caster.aim(angle)
+        _set_facing(_vector_to_dir(Vector2.from_angle(angle)))
+    var target: Vector2 = move_vector * speed * _caster.move_speed_mult
+    velocity = velocity.move_toward(target, acceleration * delta)
+
+
+## Plays Attack.png rows in the current facing column (the casters call this).
+func play_cast_frames(rows: PackedInt32Array, frame_secs: PackedFloat32Array, loop: bool) -> void:
+    sprite.flip_h = false
+    sprite.play(attack_sheet, rows, frame_secs, loop)
+
+
+func _cast_aim_angle() -> float:
+    var origin: Vector2 = global_position + cast_origin
+    if aim_point != Vector2.INF and aim_point.distance_to(origin) > 1.0:
+        return (aim_point - origin).angle()
+    return column_to_vector(move_column).angle()
+
+
+func _on_cast_finished(caster: JutsuCaster) -> void:
+    if caster != _caster:
+        return
+    _caster = null
+    if state == State.CAST:
+        state = State.MOVE
+
+
+func _cancel_cast() -> void:
+    if _caster == null:
+        return
+    var caster: JutsuCaster = _caster
+    _caster = null
+    caster.cancel()
+    if state == State.CAST:
+        state = State.MOVE
 
 
 # --- attack combo -------------------------------------------------------

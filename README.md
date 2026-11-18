@@ -22,8 +22,15 @@ Zelda-like 2D top-down RPG (Godot 4.7 / GDScript).
   - スライム `content/enemy/Slime2/slime2.tscn`: うろつく → プレイヤー発見で追跡 → 射程内で「体当たり(重み3) / 逃げる(重み1)」をランダム選択 → 見失うと再びうろつく。被弾でノックバック＋硬直、HP3で死亡。体に触れるだけでもダメージ（`slime2.tres` の `contact_damage`）
   - 体当たりは 予備動作（つぶれ＋赤み）→ 突進（約66px）→ 硬直 → クールダウン。数値は `slime2_tackle.tres`
 
+- 術（`document/忍術システム仕様.md`）
+  - 火遁・息吹の術: 押している間、前方の扇形に炎（0.15秒ごとに多段ヒット）。歩きは0.3倍速。離すと終わる（最短0.33秒）
+  - 水遁・水手裏剣の術: 短く押すと手裏剣（1ダメージ・1体で止まる）。0.9秒溜めると大手裏剣（2ダメージ・貫通・着弾で範囲1ダメージ）。溜め中は0.4倍速
+  - 術符: 術ごとに所持数。1回1枚。足りないと撃てず、左下の表示が揺れる（他の術に自動で切り替えない）。初期値は火遁10/20枚、水遁15/30枚（仮。`content/jutsu/player_jutsu_book.tres`）
+  - 左下に選択中の術（アイコン・術符の数・名前）。術ホイールで切り替え（開いている間はゲームが0.2倍速）
+  - 被弾・回避で術は中断。死んでやり直すと術符も初期値に戻る（セーブができるまで）
+
 ### これから
-- 術システム（火遁・息吹、水遁・水手裏剣から）。素材は `content/fx/`、術ホイールは `content/ui/jutsu_wheel/`
+- 術: 術符を拾って補充する仕組み（壺・草から出る）、術のレベル、8方向の絵（今は右向きの絵を回転）、空撃ち・術符を使ったときの音と演出、日本語のドット絵フォント
 - テレポーター対応（`Teleporter` は `Character` 型を前提にしており、`Player` は未対応）
 - アイテム取得（`PickUpItem` との接触）
 - 敵の2体目（使い回しの検証）、壁越しに見つけないための視線チェック、NavigationAgent2D による経路探索
@@ -32,9 +39,11 @@ Zelda-like 2D top-down RPG (Godot 4.7 / GDScript).
 
 | 操作 | キー | パッド |
 |---|---|---|
-| 移動 | 矢印キー | 十字キー / 左スティック |
+| 移動 | W A S D | 十字キー / 左スティック |
 | 攻撃（カーソルの方向へ） | 左クリック / Space | — |
 | 回避 | Shift | B（button 1） |
+| 術を使う（カーソルの方向へ。長押しで溜め・吹き続け） | 右クリック / E | X（button 2） |
+| 術ホイール（長押しで開く → カーソルで選んで左クリック。離すか右クリックでキャンセル） | Q | LB（button 9）※選択はマウスのみ |
 
 ## 素材
 
@@ -73,3 +82,17 @@ Zelda-like 2D top-down RPG (Godot 4.7 / GDScript).
 - `tools/build_enemy_scenes.gd` は最初の生成用。既存ファイルは上書きしないので、以後はエディターで編集してよい
 - Beehave にローカル修正が1か所ある（`addons/beehave/debug/debugger_messages.gd` の `can_send_message()` にデバッガ接続チェックを追加。デバッガ無しで起動すると "No active debugger" が大量に出るため）。Beehave を更新するときは消える
 
+## 術の作り方（構造）
+
+| 層 | 場所 | 役割 |
+|---|---|---|
+| データ | `ResourceJutsu`（`system/jutsu/resource_jutsu.gd`）、術ごとの `content/jutsu/<id>.tres` | 名前・印・アイコン・術符（1回の枚数・上限）・ダメージ・動きのスクリプト・素材のJSON |
+| 所持 | `ResourceJutsuBook`、初期値 `content/jutsu/player_jutsu_book.tres` | 覚えた術・術ごとの術符の数・選択中の術。プレイヤーが `_ready` で複製して使う |
+| 動き | `JutsuCaster` を継承したスクリプト（`system/jutsu/casters/`） | 1回の発動ごとにプレイヤーの子として作られる。押している間・離した時の動き、エフェクト、当たり判定 |
+| 飛び道具 | `JutsuProjectile`（`DamageArea` を継承） | まっすぐ飛び、射程・壁・命中で着弾。貫通・着弾時の範囲ダメージに対応 |
+| UI | `system/ui/jutsu/`（`jutsu_ui.tscn` を `world.tscn` の Hud に配置） | 左下の術表示 `JutsuHud`、術ホイール `JutsuWheel` |
+
+新しい術を足す手順:
+1. `JutsuCaster` を継承したスクリプトを `system/jutsu/casters/` に作る（`begin()` で開始、`update(delta, held)` で毎フレーム、終わったら `_finish()`）
+2. `ResourceJutsu` の `.tres` を作り、`caster` にそのスクリプト、`data` に素材のJSONを入れる
+3. `player_jutsu_book.tres` の `learned` に足す（ゲーム中は修行場で `book.learn()` を呼ぶ形にする予定）
