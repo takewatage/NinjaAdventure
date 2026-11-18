@@ -2,7 +2,7 @@
 extends CharacterBody2D
 class_name Player
 ## Top-down player: idle / walk / dodge (roll) / 3-hit attack combo / jutsu / hurt / dead.
-## Driven by HumanController (move_vector, aim_point, attack(), dodge(), cast_jutsu(), jutsu_held).
+## Driven by HumanController (move_vector, aim_point, attack(), dodge(), cast_jutsu(), jutsu_held, interact()).
 ## Each hit aims at aim_point (the mouse cursor) at the moment it starts. The hit shape
 ## and lunge use the exact angle; the fx uses the nearest of 8 columns, rotated by the
 ## remaining gap (rotate_fx_to_aim). The 4-direction character sprite uses the column
@@ -119,6 +119,8 @@ var _fx_spawned: bool = false
 var _attack_active: bool = false
 var _invincible_left: float = 0.0
 var _cast_pressed: bool = false
+var _interact_pressed: bool = false
+var _just_teleported: bool = false
 var _caster: JutsuCaster
 
 @onready var sprite: SheetAnimator = $Sprite
@@ -173,6 +175,34 @@ func cast_jutsu() -> void:
     _cast_pressed = true
 
 
+## Called by HumanController: use the nearest Interactable (campfire, NPC...).
+func interact() -> void:
+    _interact_pressed = true
+
+
+## Used by Teleporter (doors inside a map), same as Character.teleport.
+func teleport(target_teleporter: Teleporter, offset_position: Vector2) -> void:
+    if _just_teleported:
+        return
+    _just_teleported = true
+    global_position = target_teleporter.global_position + offset_position + target_teleporter.direction * Vector2(25, 25)
+    camera.reset_smoothing()
+    await get_tree().create_timer(0.1, false).timeout
+    _just_teleported = false
+
+
+## Puts the player at a map entry (World calls this after loading a map).
+func place_at(pos: Vector2, face: Vector2 = Vector2.ZERO) -> void:
+    global_position = pos
+    velocity = Vector2.ZERO
+    if face != Vector2.ZERO:
+        _set_facing(_vector_to_dir(face))
+        move_column = vector_to_column(face)
+    if camera.enabled:
+        camera.make_current()
+        camera.reset_smoothing()
+
+
 func _physics_process(delta: float) -> void:
     _dodge_cooldown_left = maxf(0.0, _dodge_cooldown_left - delta)
     if _combo_reset_left > 0.0:
@@ -199,6 +229,7 @@ func _physics_process(delta: float) -> void:
     _attack_pressed = false
     _dodge_pressed = false
     _cast_pressed = false
+    _interact_pressed = false
     move_and_slide()
 
 
@@ -245,6 +276,8 @@ func _column_distance(a: int, b: int) -> int:
 func _process_move(delta: float) -> void:
     if _dodge_pressed and _dodge_cooldown_left <= 0.0:
         _start_dodge()
+        return
+    if _interact_pressed and _try_interact():
         return
     if _attack_pressed and not _hits.is_empty():
         _start_hit(_next_hit)
@@ -393,6 +426,26 @@ func _cancel_attack() -> void:
     fx.visible = false
     _combo_buffered = false
     _next_hit = 0
+
+
+# --- interact -----------------------------------------------------------
+
+func _try_interact() -> bool:
+    var best: Interactable = null
+    var best_dist: float = INF
+    for node: Node in get_tree().get_nodes_in_group("interactable"):
+        var it := node as Interactable
+        if it == null or not it.can_interact(self):
+            continue
+        var d: float = it.global_position.distance_to(global_position)
+        if d < best_dist:
+            best = it
+            best_dist = d
+    if best == null:
+        return false
+    velocity = Vector2.ZERO
+    best.interact(self)
+    return true
 
 
 # --- jutsu --------------------------------------------------------------

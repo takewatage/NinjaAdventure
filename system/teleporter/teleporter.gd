@@ -37,7 +37,10 @@ func _ready() -> void:
     update_arrow_direction()
 
 
-func on_player_entered(player:Character):
+## Character (template NPCs/player) and Player both have teleport().
+func on_player_entered(player:Node2D):
+    if not player.has_method("teleport"):
+        return
     var transition:Transition = get_tree().get_first_node_in_group("transition")
     if transition:
         await transition.play(transition_enter)

@@ -1,7 +1,7 @@
 [gd_scene load_steps=43 format=3 uid="uid://c7j4hgkdbtapk"]
 
 [ext_resource type="Script" path="res://world.gd" id="1_804hp"]
-[ext_resource type="PackedScene" uid="uid://cdc0jr72ch7jr" path="res://content/map/map_test.tscn" id="2_d7dii"]
+[ext_resource type="PackedScene" uid="uid://c83pfkmwxrf3p" path="res://content/map/map_village.tscn" id="2_d7dii"]
 [ext_resource type="Resource" uid="uid://uditl1ns5wqe" path="res://content/weapon/club/club.tres" id="3_gy5i3"]
 [ext_resource type="Script" path="res://system/camera/camera_grid.gd" id="4_am12t"]
 [ext_resource type="Texture2D" uid="uid://bs4uxpqfesgko" path="res://system/environment/fx/rain.png" id="8_5w8v0"]
@@ -188,7 +188,6 @@ script = ExtResource("11_w52t8")
 
 [node name="CameraGrid" type="Camera2D" parent="."]
 unique_name_in_owner = true
-zoom = Vector2(4, 4)
 process_callback = 0
 script = ExtResource("4_am12t")
 
@@ -260,8 +259,6 @@ bus = &"Music"
 script = ExtResource("10_4llys")
 
 [node name="Hud" type="CanvasLayer" parent="."]
-scale = Vector2(4, 4)
-transform = Transform2D(4, 0, 0, 4, 0, 0)
 
 [node name="PlayerUi" parent="Hud" instance=ExtResource("15_wger8")]
 unique_name_in_owner = true

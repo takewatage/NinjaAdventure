@@ -24,14 +24,26 @@ var map:Map
 
 ## Seconds the player lies defeated before the screen fades out.
 @export var death_wait: float = 2.0
+## MapEntry.id where the game starts on starting_map.
+@export var starting_entry: StringName = &"start"
+## The player character. One instance lives across maps (life, talismans...).
+@export var player_scene: PackedScene = preload("res://content/character/ninja_main/ninja_main.tscn")
 
-## The map currently loaded, so it can be reloaded when the player dies.
-var _map_scene: PackedScene
+const PLAYER_ASSIGNOR: PackedScene = preload("res://system/character/player_assignor.tscn")
+
+var _map_path: String
 var _player: Player
+var _changing_map: bool = false
+## Where to restart after dying: {"map": path, "entry": id, "position": Vector2 or INF}.
+var _checkpoint: Dictionary = {}
+## Campfires already lit (Campfire._key()). TODO: move into the save data.
+var _lit_campfires: Dictionary[String, bool] = {}
 
 
 func _ready():
-    generate_map(starting_map)
+    add_to_group("world")
+    _checkpoint = {"map": starting_map.resource_path, "entry": starting_entry, "position": Vector2.INF}
+    generate_map(starting_map, starting_entry)
     camera_grid.animation_finished.connect(on_camera_animation_finished)
 
 
@@ -39,39 +51,119 @@ func on_camera_animation_finished():
     pivot.position = camera_grid.global_position
 
 
-func generate_map(map_scene:PackedScene):
+# --- maps -------------------------------------------------------------------
+
+## Called by MapExit (through the "world" group): fade out, swap maps, fade in.
+func change_map(map_path: String, entry_id: StringName) -> void:
+    if _changing_map or _player == null or _player.state == Player.State.DEAD:
+        return
+    _changing_map = true
+    await transition.play(Transition.Type.FADE_IN)
+    generate_map(load(map_path), entry_id)
+    await transition.play(Transition.Type.FADE_OUT)
+    _changing_map = false
+
+
+## Loads a map and puts the player at entry_id (or at `at`, or where the map's
+## own test player stands). A player placed in the map by hand (for testing the
+## map alone) is replaced by the World's player.
+func generate_map(map_scene: PackedScene, entry_id: StringName = &"", at: Vector2 = Vector2.INF):
+    if _player and _player.get_parent():
+        _player.get_parent().remove_child(_player)
     if map:
         map.queue_free()
-    _map_scene = map_scene
+    _map_path = map_scene.resource_path
     map = map_scene.instantiate()
     add_child(map)
     if map.environment_area.get_child_count() > 0:
         map.environment_area.environment_changed.connect(apply_environment)
-    _bind_player()
 
+    var placeholder: Node2D = _take_map_player()
+    var parent: Node = placeholder.get_parent() if placeholder else _y_sort_parent()
+    var pos: Vector2 = Vector2.ZERO
+    var face: Vector2 = Vector2.ZERO
+    var entry: MapEntry = _find_entry(entry_id)
+    if entry:
+        pos = entry.global_position
+        face = entry.facing
+    elif at != Vector2.INF:
+        pos = at
+    elif placeholder:
+        pos = placeholder.global_position
+    if placeholder:
+        placeholder.get_parent().remove_child(placeholder)
+        placeholder.queue_free()
 
-## Connects the player of the new map to the HUD and to the death handling.
-func _bind_player() -> void:
-    _player = null
-    for node in get_tree().get_nodes_in_group("player"):
-        if node is Player and map.is_ancestor_of(node):
-            _player = node
-            break
     if _player == null:
-        jutsu_ui.player = null
-        return
-    player_ui.resource_life = _player.life
-    jutsu_ui.player = _player
-    _player.died.connect(_on_player_died)
+        _player = _new_player(null)
+    parent.add_child(_player)
+    _player.place_at(pos, face)
 
 
-## Defeat: wait, fade to black, reload the map (the player starts again at the
-## map's start with full life), fade back in.
-## TODO: once saving exists, restart from the last campfire / home instead.
+func _take_map_player() -> Node2D:
+    for node: Node in map.find_children("*", "", true, false):
+        if node is Player:
+            return node
+    return null
+
+
+## Characters are y-sorted inside the map's TileMap.
+func _y_sort_parent() -> Node:
+    for node: Node in map.find_children("*", "TileMap", true, false):
+        return node
+    return map
+
+
+func _find_entry(entry_id: StringName) -> MapEntry:
+    if entry_id == &"":
+        return null
+    for node: Node in map.find_children("*", "", true, false):
+        if node is MapEntry and node.id == entry_id:
+            return node
+    return null
+
+
+## A fresh player. `book` carries the jutsu and talismans over (null = initial).
+func _new_player(book: ResourceJutsuBook) -> Player:
+    var player: Player = player_scene.instantiate()
+    if book:
+        player.jutsu_book = book
+    player.add_child(PLAYER_ASSIGNOR.instantiate())
+    player.died.connect(_on_player_died)
+    player.ready.connect(_bind_ui.bind(player), CONNECT_ONE_SHOT)
+    return player
+
+
+func _bind_ui(player: Player) -> void:
+    player_ui.resource_life = player.life
+    jutsu_ui.player = player
+
+
+# --- checkpoints (campfires) ------------------------------------------------
+
+## Restart here after dying (a campfire calls this). Position on the current map.
+func set_checkpoint(pos: Vector2) -> void:
+    _checkpoint = {"map": _map_path, "entry": &"", "position": pos}
+
+
+func is_campfire_lit(key: String) -> bool:
+    return _lit_campfires.get(key, false)
+
+
+func mark_campfire_lit(key: String) -> void:
+    _lit_campfires[key] = true
+
+
+## Defeat: wait, fade to black, a new player (full life, same jutsu and
+## talismans) at the last checkpoint, fade back in.
 func _on_player_died() -> void:
     await get_tree().create_timer(death_wait).timeout
     await transition.play(Transition.Type.FADE_IN)
-    generate_map(_map_scene)
+    var book: ResourceJutsuBook = _player.book
+    _player.get_parent().remove_child(_player)
+    _player.queue_free()
+    _player = _new_player(book)
+    generate_map(load(_checkpoint["map"]), _checkpoint["entry"], _checkpoint["position"])
     await transition.play(Transition.Type.FADE_OUT)
 
 

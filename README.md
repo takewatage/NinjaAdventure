@@ -13,11 +13,16 @@ Zelda-like 2D top-down RPG (Godot 4.7 / GDScript).
   - 三段攻撃コンボ（左クリック / Space）: なぎ払い → 逆なぎ払い → 突き。攻撃方向に踏み込む（1・2段目5px、3段目10px）。数値は `content/fx/combo3/combo3_8dir.json` が正
   - 攻撃はマウスカーソルの方向（各段の開始時に照準）。当たり判定・踏み込みは正確な角度。エフェクトは最寄りの8方向の絵を、残りの角度（最大±22.5°）だけ回転させて判定に合わせる。キャラの絵は最寄りの方向（4方向なので斜めは上下の絵）
   - エフェクトの回転が見た目に合わない場合: インスペクターで `rotate_fx_to_aim` をオフ、`snap_aim_to_8_directions` をオンにすると、判定のほうを8方向に揃える
+- 画面: 480×270（30×17マス）を整数倍で拡大（1920×1080 なら4倍）。カメラはプレイヤー追従。根拠は `document/素材の寸法と画面サイズ.md`
 - 被ダメージ: HP6（`max_life`）。被弾で Hit.png のアニメ＋ノックバック（0.3秒操作不可）→ 1秒無敵（点滅）。HP0で操作不能になり、Hit.png → Dead.png（1列×2コマ）＋土煙（`DeathBurst`）→ 頭上で星が回り続ける（`DizzyStars`）の順。カメラは1.4倍までズーム（`death_zoom`）。回避中は無敵
 - 体力表示: 左上のハート（`system/ui/player_ui.gd`、`content/ui/heart.png`）。ハート1個 = HP2（`life_per_heart`）なので HP6 = ハート3個、1ダメージで半分減る
 - 死亡後: 2秒待って暗転 → 今のマップを読み直して、マップの初期位置・HP満タンでやり直し（`world.gd` の `_on_player_died`）。セーブができたら、最後の焚き火・家から再開に変える
 - 体力表示と死亡後のやり直しは `world.tscn` 経由で動く（`test.tscn` 単体には HUD が無い）
 - 試験場 `content/map/map_test.tscn` で NinjaMain を操作キャラに設定（壺1・草2・スライム1を配置）
+- マップのつながり（`world.tscn` から起動）: 村 `map_village.tscn` → チュートリアルの道 `content/map/demo/tutorial_road.tscn` → ボスまでの道 `content/map/demo/boss_road.tscn`。マップの端の出入口（`MapExit`）に入ると暗転して切り替わり、相手のマップの `MapEntry` に出る。プレイヤーはマップをまたいで同じ（体力・術符を引き継ぐ）
+  - 村の出口は上の道の突き当たり。村のプレイヤーだった NinjaBlue は NPC にした（PlayerAssignor と攻撃判定を外した）。家の中へのテレポーターは Player でも使える
+  - 道の2マップは仮（草の床・外周の木・木・スライム・草/壺・焚き火）。`tools/build_demo_maps.gd` で作った。以後はエディターで描き直してよい（ビルダーは既存ファイルを上書きしない）
+- 焚き火（`content/prop/campfire/campfire.tscn`）: 近くで F を押すと火がつき、死んだときの再開地点になる。一度つけた焚き火はマップを出入りしてもついたまま。再開時は体力満タン、術符はそのまま。焚き火をつける前に死ぬと村のスタート地点から
 - 敵 AI の土台（Beehave 2.9.3 のビヘイビアツリー）
   - スライム `content/enemy/Slime2/slime2.tscn`: うろつく → プレイヤー発見で追跡 → 射程内で「体当たり(重み3) / 逃げる(重み1)」をランダム選択 → 見失うと再びうろつく。被弾でノックバック＋硬直、HP3で死亡。体に触れるだけでもダメージ（`slime2.tres` の `contact_damage`）
   - 体当たりは 予備動作（つぶれ＋赤み）→ 突進（約66px）→ 硬直 → クールダウン。数値は `slime2_tackle.tres`
@@ -30,6 +35,8 @@ Zelda-like 2D top-down RPG (Godot 4.7 / GDScript).
   - 被弾・回避で術は中断。死んでやり直すと術符も初期値に戻る（セーブができるまで）
 
 ### これから
+- 調べられる物に近づいたときの表示（「F」の吹き出しなど）。村の外周は壁が無く、マップの外へ歩いて出られる
+- タイトル画面（`content/menu/title_screen.tscn`）は 1920×1080 前提の文字サイズのまま。480×270 に合わせて作り直す（段階6）
 - 術: 術符を拾って補充する仕組み（壺・草から出る）、術のレベル、8方向の絵（今は右向きの絵を回転）、空撃ち・術符を使ったときの音と演出、日本語のドット絵フォント
 - テレポーター対応（`Teleporter` は `Character` 型を前提にしており、`Player` は未対応）
 - アイテム取得（`PickUpItem` との接触）
@@ -44,6 +51,7 @@ Zelda-like 2D top-down RPG (Godot 4.7 / GDScript).
 | 回避 | Shift | B（button 1） |
 | 術を使う（カーソルの方向へ。長押しで溜め・吹き続け） | 右クリック / E | X（button 2） |
 | 術ホイール（長押しで開く → カーソルで選んで左クリック。離すか右クリックでキャンセル） | Q | LB（button 9）※選択はマウスのみ |
+| 調べる（焚き火など） | F | A（button 0） |
 
 ## 素材
 
@@ -96,3 +104,16 @@ Zelda-like 2D top-down RPG (Godot 4.7 / GDScript).
 1. `JutsuCaster` を継承したスクリプトを `system/jutsu/casters/` に作る（`begin()` で開始、`update(delta, held)` で毎フレーム、終わったら `_finish()`）
 2. `ResourceJutsu` の `.tres` を作り、`caster` にそのスクリプト、`data` に素材のJSONを入れる
 3. `player_jutsu_book.tres` の `learned` に足す（ゲーム中は修行場で `book.learn()` を呼ぶ形にする予定）
+
+## マップの作り方（構造）
+
+| 部品 | 場所 | 役割 |
+|---|---|---|
+| マップ | `system/map/map.tscn` を継承したシーン | タイル（`Tilemap`）・環境（BGM・天気の `EnvironmentArea`）。キャラは `Tilemap` の子に置くと前後が正しく重なる |
+| 出てくる位置 | `MapEntry`（`system/map/map_entry.gd`） | `id` と向き。別のマップから来たときにここに出る |
+| 出入口 | `MapExit`（`system/map/map_exit.gd`）＋ CollisionShape2D | 入ると `target_map` の `target_entry` へ移る |
+| 焚き火 | `content/prop/campfire/campfire.tscn` | 調べると火がつき、再開地点になる |
+| 調べられる物 | `Interactable`（`system/prop/interactable.gd`） | 近く（`radius`）で F を押すと `interacted` が出る。NPC の会話にも使う予定 |
+
+- プレイヤーは `world.gd` が作り、マップをまたいで使い回す。マップの中に置いたテスト用のプレイヤー（`map_test` の NinjaMain など）は、`world.tscn` から起動すると World のプレイヤーに置き換わる
+- 最初のマップは `world.tscn` の `starting_map` と `starting_entry`（今は村の `start`）

@@ -18,6 +18,8 @@
 [ext_resource type="PackedScene" uid="uid://bheb2v7fdghba" path="res://content/character/samurai_blue/samurai_blue.tscn" id="10_kdwhh"]
 [ext_resource type="AudioStream" uid="uid://c7vlu3uu47bb5" path="res://audio/music/theme_dream.ogg" id="15_4dufa"]
 [ext_resource type="Script" path="res://system/teleporter/teleporter.gd" id="18_rh3ex"]
+[ext_resource type="Script" path="res://system/map/map_entry.gd" id="30_entry"]
+[ext_resource type="Script" path="res://system/map/map_exit.gd" id="31_exit"]
 
 [sub_resource type="Resource" id="Resource_m4bmw"]
 script = ExtResource("5_u7nr0")
@@ -56,6 +58,9 @@ meteo_list = Array[int]([5])
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2qsb7"]
 size = Vector2(20, 10)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_exit_road"]
+size = Vector2(64, 16)
+
 [node name="MapVillage" instance=ExtResource("1_6r46d")]
 
 [node name="ScreenGridRef" parent="." index="0"]
@@ -74,17 +79,6 @@ layer_3/tile_data = PackedInt32Array(-917533, 65537, 12, -851997, 1, 12, -786461
 
 [node name="NinjaBlue" parent="Tilemap" index="4" instance=ExtResource("7_n8vb2")]
 position = Vector2(17, 375)
-
-[node name="PlayerAssignor" parent="Tilemap/NinjaBlue" index="4" instance=ExtResource("3_050vr")]
-
-[node name="DamageArea" type="Area2D" parent="Tilemap/NinjaBlue" index="5"]
-script = ExtResource("4_x8ws0")
-damage = SubResource("Resource_m4bmw")
-team = ExtResource("6_u73qr")
-
-[node name="DamageShape" type="CollisionShape2D" parent="Tilemap/NinjaBlue/DamageArea" index="0"]
-shape = SubResource("CircleShape2D_a20kx")
-debug_color = Color(0.976471, 0, 0.423529, 0.419608)
 
 [node name="Pig" parent="Tilemap" index="5" instance=ExtResource("7_cu425")]
 position = Vector2(0, 36)
@@ -199,3 +193,21 @@ direction = Vector2(0, -1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Teleporter4" index="1"]
 shape = SubResource("RectangleShape2D_2qsb7")
+
+[node name="EntryStart" type="Marker2D" parent="." index="7"]
+position = Vector2(48, 360)
+script = ExtResource("30_entry")
+
+[node name="EntryFromRoad" type="Marker2D" parent="." index="8"]
+position = Vector2(-33, -220)
+script = ExtResource("30_entry")
+id = &"from_road"
+
+[node name="ExitToRoad" type="Area2D" parent="." index="9"]
+position = Vector2(-33, -264)
+script = ExtResource("31_exit")
+target_map = "res://content/map/demo/tutorial_road.tscn"
+target_entry = &"from_village"
+
+[node name="Shape" type="CollisionShape2D" parent="ExitToRoad"]
+shape = SubResource("RectangleShape2D_exit_road")

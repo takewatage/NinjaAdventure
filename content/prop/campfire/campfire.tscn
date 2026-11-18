@@ -1,0 +1,25 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://system/prop/campfire.gd" id="1_fire"]
+[ext_resource type="Script" path="res://system/player/sheet_animator.gd" id="2_anim"]
+[ext_resource type="Texture2D" path="res://content/prop/campfire/campfire_unlit.png" id="3_unlit"]
+[ext_resource type="Script" path="res://system/prop/interactable.gd" id="4_inter"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ring"]
+size = Vector2(24, 10)
+
+[node name="Campfire" type="StaticBody2D"]
+script = ExtResource("1_fire")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("3_unlit")
+offset = Vector2(0, -12)
+script = ExtResource("2_anim")
+cell_size = Vector2i(48, 48)
+columns = 1
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_ring")
+
+[node name="Interactable" type="Node2D" parent="."]
+script = ExtResource("4_inter")

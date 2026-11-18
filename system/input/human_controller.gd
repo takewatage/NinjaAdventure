@@ -14,6 +14,7 @@ class_name HumanController
 @export var action_attack := "action"
 @export var action_dodge := "dodge"
 @export var action_jutsu := "jutsu"
+@export var action_interact := "interact"
 
 var parent:Node2D
 
@@ -49,3 +50,5 @@ func _process(delta: float) -> void:
         parent.jutsu_held = Input.is_action_pressed(action_jutsu)
         if Input.is_action_just_pressed(action_jutsu):
             parent.cast_jutsu()
+    if InputMap.has_action(action_interact) and Input.is_action_just_pressed(action_interact) and parent.has_method("interact"):
+        parent.interact()
