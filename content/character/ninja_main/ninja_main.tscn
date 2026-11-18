@@ -1,7 +1,7 @@
-[gd_scene load_steps=21 format=3]
+[gd_scene load_steps=22 format=3]
 
 [ext_resource type="Script" path="res://system/player/player.gd" id="1_player"]
-[ext_resource type="JSON" path="res://content/fx/combo3/combo3_8dir.json" id="2_combo"]
+[ext_resource type="JSON" path="res://content/fx/combo3/combo3_8dir_kunai.json" id="2_combo"]
 [ext_resource type="Resource" uid="uid://ujea2b11dl3n" path="res://content/team/player_team.tres" id="3_team"]
 [ext_resource type="Texture2D" path="res://content/character/ninja_main/Idle.png" id="4_idle"]
 [ext_resource type="Texture2D" path="res://content/character/ninja_main/Walk.png" id="5_walk"]
@@ -17,6 +17,7 @@
 [ext_resource type="Texture2D" path="res://content/fx/death/fx_dizzy_stars.png" id="15_dizzy"]
 [ext_resource type="Texture2D" path="res://content/fx/death/fx_death_burst.png" id="16_burst"]
 [ext_resource type="Resource" path="res://content/jutsu/player_jutsu_book.tres" id="17_book"]
+[ext_resource type="Texture2D" path="res://content/weapon/kunai/kunai_rot16.png" id="18_kunai"]
 
 [sub_resource type="Resource" id="Resource_damage"]
 script = ExtResource("12_damage")
@@ -65,6 +66,12 @@ offset = Vector2(0, -6)
 hframes = 4
 vframes = 4
 script = ExtResource("10_anim")
+
+[node name="Kunai" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(0, -5)
+texture = ExtResource("18_kunai")
+hframes = 16
 
 [node name="Fx" type="Sprite2D" parent="."]
 visible = false

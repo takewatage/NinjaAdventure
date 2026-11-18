@@ -7,7 +7,8 @@ class_name Player
 ## and lunge use the exact angle; the fx uses the nearest of 8 columns, rotated by the
 ## remaining gap (rotate_fx_to_aim). The 4-direction character sprite uses the column
 ## given by combo_data's direction table.
-## Combo timings, hit shapes and fx come from combo_data (content/fx/combo3/combo3_8dir.json).
+## Combo timings, hit shapes, fx and the kunai come from combo_data
+## (content/fx/combo3/combo3_8dir_kunai.json).
 
 signal died
 
@@ -52,6 +53,9 @@ const AIM_RELEASE_GRACE: float = 0.08
 ## so the fx lines up with the hit shape. Pixel art gets jagged when rotated; if that
 ## looks bad, turn this off and turn snap_aim_to_8_directions on instead.
 @export var rotate_fx_to_aim: bool = true
+## Step forward (px) during each hit's active time. Overrides the combo file's
+## lunge_px_along_aim when set (one value per hit). Empty = use the file.
+@export var lunge_px: PackedFloat32Array = PackedFloat32Array([5.0, 5.0, 10.0])
 
 @export_category("jutsu")
 ## Known jutsu and talismans at the start (duplicated on _ready).
@@ -116,6 +120,9 @@ var _next_hit: int = 0
 var _combo_buffered: bool = false
 var _combo_reset_left: float = 0.0
 var _fx_spawned: bool = false
+## Kunai (weapon sprite) per hit: timelines[hit][column][frame] = [rot, x, y, behind].
+var _kunai_timelines: Array = []
+var _kunai_fps: float = 30.0
 var _attack_active: bool = false
 var _invincible_left: float = 0.0
 var _cast_pressed: bool = false
@@ -129,6 +136,7 @@ var _caster: JutsuCaster
 @onready var attack_area: DamageArea = $AttackArea
 @onready var attack_shape: CollisionPolygon2D = $AttackArea/Shape
 @onready var camera: Camera2D = $Camera2D
+@onready var kunai: Sprite2D = get_node_or_null("Kunai") as Sprite2D
 @onready var death_burst: SheetAnimator = get_node_or_null("DeathBurst") as SheetAnimator
 @onready var dizzy_stars: SheetAnimator = get_node_or_null("DizzyStars") as SheetAnimator
 
@@ -423,6 +431,7 @@ func _show_dizzy_stars() -> void:
 
 func _cancel_attack() -> void:
     _set_attack_active(false)
+    _hide_kunai()
     fx.visible = false
     _combo_buffered = false
     _next_hit = 0
@@ -534,12 +543,32 @@ func _load_combo() -> void:
         var fx_info: Dictionary = hit["fx"]
         var sheet: Texture2D = load(String(fx_info["sheet"]))
         _fx_sheets.append(sheet)
-        var shape: Dictionary = hit["hit_shape"]
-        var polygon := PackedVector2Array()
+        _hit_polygons.append(_shape_polygon(hit["hit_shape"]))
+    # The kunai is optional (older combo files have none).
+    if root.has("kunai"):
+        var kunai_info: Dictionary = root["kunai"]
+        var timelines: Dictionary = kunai_info["timelines"]
+        for h: Variant in combo["hits"]:
+            _kunai_timelines.append(timelines.get(String((h as Dictionary)["name"]), []))
+        _kunai_fps = float(fx_common["fps"])
+    if kunai:
+        kunai.visible = false
+
+
+## Hit shapes face right: a "polygon", or a "rect" {x, y, w, h}.
+func _shape_polygon(shape: Dictionary) -> PackedVector2Array:
+    var polygon := PackedVector2Array()
+    if shape.has("polygon"):
         for p: Variant in shape["polygon"]:
             var point: Array = p
             polygon.append(Vector2(float(point[0]), float(point[1])))
-        _hit_polygons.append(polygon)
+    elif String(shape.get("type", "")) == "rect":
+        var x: float = float(shape["x"])
+        var y: float = float(shape["y"])
+        var w: float = float(shape["w"])
+        var h: float = float(shape["h"])
+        polygon = PackedVector2Array([Vector2(x, y), Vector2(x + w, y), Vector2(x + w, y + h), Vector2(x, y + h)])
+    return polygon
 
 
 func _start_hit(index: int) -> void:
@@ -589,6 +618,7 @@ func _hit_flip_h(hit: Dictionary, direction: Dictionary) -> bool:
 func _process_attack(delta: float) -> void:
     _state_time += delta
     var hit: Dictionary = _hits[_hit_index]
+    _update_kunai()
 
     var fx_info: Dictionary = hit["fx"]
     if not _fx_spawned and _state_time >= float(fx_info["spawn_at_sec"]):
@@ -602,9 +632,9 @@ func _process_attack(delta: float) -> void:
         _set_attack_active(is_active)
 
     # Lunge: spread lunge_px_along_aim over the active window, toward the aim.
-    var lunge_px: float = float(hit["lunge_px_along_aim"])
-    if is_active and lunge_px > 0.0:
-        velocity = Vector2.from_angle(_hit_angle) * lunge_px / (active_end - active_start)
+    var step_px: float = lunge_px[_hit_index] if _hit_index < lunge_px.size() else float(hit["lunge_px_along_aim"])
+    if is_active and step_px > 0.0:
+        velocity = Vector2.from_angle(_hit_angle) * step_px / (active_end - active_start)
     else:
         velocity = Vector2.ZERO
 
@@ -619,6 +649,7 @@ func _process_attack(delta: float) -> void:
 
     if _state_time >= float(hit["duration_sec"]):
         _set_attack_active(false)
+        _hide_kunai()
         state = State.MOVE
         velocity = Vector2.ZERO
         if has_next:
@@ -650,6 +681,36 @@ func _spawn_fx(index: int, frame_count: int) -> void:
 
 func _on_fx_finished() -> void:
     fx.visible = false
+
+
+## Kunai pose for this frame of the hit: frame of the 16-angle sheet, offset
+## from the visual center, in front of or behind the character.
+func _update_kunai() -> void:
+    if kunai == null or _hit_index >= _kunai_timelines.size():
+        return
+    var columns: Array = _kunai_timelines[_hit_index]
+    if columns.is_empty():
+        kunai.visible = false
+        return
+    var frames: Array = columns[_hit_column]
+    var index: int = mini(int(_state_time * _kunai_fps), frames.size() - 1)
+    var pose: Array = frames[index]
+    kunai.frame = int(pose[0])
+    # The poses are drawn for the column's angle; turn them by the same small
+    # gap as the slash fx so the kunai follows the exact aim.
+    var gap: float = wrapf(_hit_angle - float(_hit_column) * PI / 4.0, -PI, PI) if rotate_fx_to_aim else 0.0
+    kunai.rotation = gap
+    kunai.position = cast_origin + Vector2(float(pose[1]), float(pose[2])).rotated(gap)
+    var behind: bool = int(pose[3]) == 1
+    var kunai_before_sprite: bool = kunai.get_index() < sprite.get_index()
+    if behind != kunai_before_sprite:
+        move_child(kunai, sprite.get_index())
+    kunai.visible = true
+
+
+func _hide_kunai() -> void:
+    if kunai:
+        kunai.visible = false
 
 
 func _set_attack_active(on: bool) -> void:

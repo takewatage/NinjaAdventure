@@ -10,9 +10,9 @@ Zelda-like 2D top-down RPG (Godot 4.7 / GDScript).
 - 主人公 `content/character/ninja_main/ninja_main.tscn`（スクリプト: `system/player/player.gd`）
   - 待機・歩き（4方向アニメ、8方向移動）
   - 回避ローリング（Shift / パッド B）: 0.3秒、移動中の方向へ転がる、転がり中は無敵
-  - 三段攻撃コンボ（左クリック / Space）: なぎ払い → 逆なぎ払い → 突き。攻撃方向に踏み込む（1・2段目5px、3段目10px）。数値は `content/fx/combo3/combo3_8dir.json` が正
-  - 攻撃はマウスカーソルの方向（各段の開始時に照準）。当たり判定・踏み込みは正確な角度。エフェクトは最寄りの8方向の絵を、残りの角度（最大±22.5°）だけ回転させて判定に合わせる。キャラの絵は最寄りの方向（4方向なので斜めは上下の絵）
-  - エフェクトの回転が見た目に合わない場合: インスペクターで `rotate_fx_to_aim` をオフ、`snap_aim_to_8_directions` をオンにすると、判定のほうを8方向に揃える
+  - 三段攻撃コンボ（左クリック / Space）: なぎ払い → 逆なぎ払い → 突き。白い斬撃と、手に持ったクナイ（`Kunai` ノード、`content/weapon/kunai/kunai_rot16.png`）。数値・クナイの動きは `content/fx/combo3/combo3_8dir_kunai.json` が正
+  - 攻撃はマウスカーソルの方向（各段の開始時に照準）。当たり判定・踏み込みは正確な角度。斬撃とクナイは最寄りの8方向の絵を、残りの角度（最大±22.5°）だけ回して判定に合わせる。踏み込みは1・2段目5px、3段目10px（`lunge_px`。素材のJSONより優先）。キャラの絵は最寄りの方向（4方向なので斜めは上下の絵）
+  - 絵を回したくない場合: インスペクターで `rotate_fx_to_aim` をオフ、`snap_aim_to_8_directions` をオンにすると、判定のほうを8方向にそろえる
 - 画面: 480×270（30×17マス）を整数倍で拡大（1920×1080 なら4倍）。カメラはプレイヤー追従。根拠は `document/素材の寸法と画面サイズ.md`
 - 被ダメージ: HP6（`max_life`）。被弾で Hit.png のアニメ＋ノックバック（0.3秒操作不可）→ 1秒無敵（点滅）。HP0で操作不能になり、Hit.png → Dead.png（1列×2コマ）＋土煙（`DeathBurst`）→ 頭上で星が回り続ける（`DizzyStars`）の順。カメラは1.4倍までズーム（`death_zoom`）。回避中は無敵
 - 体力表示: 左上のハート（`system/ui/player_ui.gd`、`content/ui/heart.png`）。ハート1個 = HP2（`life_per_heart`）なので HP6 = ハート3個、1ダメージで半分減る
