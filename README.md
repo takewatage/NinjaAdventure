@@ -17,7 +17,8 @@ Zelda-like 2D top-down RPG (Godot 4.7 / GDScript).
 - 被ダメージ: HP6（`max_life`）。被弾で Hit.png のアニメ＋ノックバック（0.3秒操作不可）→ 1秒無敵（点滅）。HP0で操作不能になり、Hit.png → Dead.png（1列×2コマ）＋土煙（`DeathBurst`）→ 頭上で星が回り続ける（`DizzyStars`）の順。カメラは1.4倍までズーム（`death_zoom`）。回避中は無敵
 - 体力表示: 左上のハート（`system/ui/player_ui.gd`、`content/ui/heart.png`）。ハート1個 = HP2（`life_per_heart`）なので HP6 = ハート3個、1ダメージで半分減る
 - 死亡後: 2秒待って暗転 → 今のマップを読み直して、マップの初期位置・HP満タンでやり直し（`world.gd` の `_on_player_died`）。セーブができたら、最後の焚き火・家から再開に変える
-- 体力表示と死亡後のやり直しは `world.tscn` 経由で動く（`test.tscn` 単体には HUD が無い）
+- 体力表示と死亡後のやり直しは `world.tscn` 経由で動く
+- デバッグ専用シーン `test.tscn`（ゲーム本編では使わない。エディタで開いて F6）: `content/jutsu/` にある術（`ResourceJutsu` の .tres）を全部覚えた状態で始まり、術符は撃ってもすぐ上限まで戻る（`system/debug/debug_scene.gd`。`infinite_talismans` で切り替え）。左上のハート・所持金と左下の術表示・術ホイールも出る。スライム3体・壺・草を配置。死んでもやり直しは無い（`world.tscn` 経由ではないため）
 - 試験場 `content/map/map_test.tscn` で NinjaMain を操作キャラに設定（壺1・草2・スライム1を配置）
 - マップのつながり（`world.tscn` から起動）: 村 `map_village.tscn` → チュートリアルの道 `content/map/demo/tutorial_road.tscn` → ボスまでの道 `content/map/demo/boss_road.tscn`。マップの端の出入口（`MapExit`）に入ると暗転して切り替わり、相手のマップの `MapEntry` に出る。プレイヤーはマップをまたいで同じ（体力・術符を引き継ぐ）
   - 村の出口は上の道の突き当たり。村のプレイヤーだった NinjaBlue は NPC にした（PlayerAssignor と攻撃判定を外した）。家の中へのテレポーターは Player でも使える
@@ -30,12 +31,13 @@ Zelda-like 2D top-down RPG (Godot 4.7 / GDScript).
 - 術（`document/忍術システム仕様.md`）
   - 火遁・息吹の術: 押している間、前方の扇形に炎（0.15秒ごとに多段ヒット）。歩きは0.3倍速。離すと終わる（最短0.33秒）
   - 水遁・水手裏剣の術: 短く押すと手裏剣（1ダメージ・1体で止まる）。0.9秒溜めると大手裏剣（2ダメージ・貫通・着弾で範囲1ダメージ）。溜め中は0.4倍速
-  - 術符: 術ごとに所持数。1回1枚。足りないと撃てず、左下の表示が揺れる（他の術に自動で切り替えない）。初期値は火遁10/20枚、水遁15/30枚（仮。`content/jutsu/player_jutsu_book.tres`）
+  - 雷遁・雷轟の術: 押すと狙った方向の36px先に、0.3秒後に雷が落ちる（半径20pxの円の範囲、2ダメージ、当たった敵は落雷点から外向きに押される）。絵は回転させず、どの向きに撃っても雷は画面の上から落ちる。手元の火花だけキャラの位置に出す（左向きは左右反転）。発動中は立ち止まり、向きも固定。落雷前に被弾・回避すると雷も落ちない
+  - 術符: 術ごとに所持数。1回1枚。足りないと撃てず、左下の表示が揺れる（他の術に自動で切り替えない）。初期値は火遁10/20枚、水遁15/30枚、雷轟5/10枚（仮。`content/jutsu/player_jutsu_book.tres`）
   - 左下に選択中の術（アイコン・術符の数・名前）。術ホイールで切り替え（開いている間はゲームが0.2倍速）
   - 被弾・回避で術は中断。死んでも術符の数はそのまま
 - アイテム（段階3）
   - 拾えるアイテム `Pickup`（`system/item/pickup.gd`、`content/item/pickup/pickup.tscn`）: 術符（印ごと7種の絵、半分の大きさ＝8×8で表示。`talisman_scale`）・銀貨(1)・金貨(5、回転アニメ)。近づくと（36px）ゆっくり寄ってきて、近いほど速くなり、プレイヤーに届くと取れる。取ると頭上に「火遁 +3」「+5」が浮かぶ
-  - 術符を拾うと、同じ印の術のうちいちばん減っている術が `talisman_pickup` 枚回復（火遁3・水遁5）。全部満タンなら寄ってこない
+  - 術符を拾うと、同じ印の術のうちいちばん減っている術が `talisman_pickup` 枚回復（火遁3・水遁5・雷轟2）。全部満タンなら寄ってこない
   - ドロップ表 `ResourceLoot`（`content/item/loot/*.tres`）: 草・壺（`Destroyable.loot`）、敵（`ResourceEnemy.loot`）、宝箱に設定。術符は「印ランダム」か「印を確定」。落ちた物は20秒で消える（最後の4秒点滅）
   - 所持金 `ResourceWallet`: 左上のハートの下に表示（増えるとカウントアップ）。死んでも減らない
   - 宝箱 `content/prop/chest/chest.tscn`: F で開けると中身が飛び出す。巻物（`scroll` に術を入れる）なら術を覚える。開けた宝箱・手置きのアイテムは再訪しても戻らない（`world.gd` の `has_flag` / `set_flag`。セーブができたらそこへ）
@@ -45,6 +47,8 @@ Zelda-like 2D top-down RPG (Godot 4.7 / GDScript).
 - タイトル画面（`content/menu/title_screen.tscn`）は 1920×1080 前提の文字サイズのまま。480×270 に合わせて作り直す（段階6）
 - 設定画面（段階6）: BGM・効果音の音量（`default_bus_layout.tres` の Music / Sound バスを `AudioServer.set_bus_volume_db` で変える。今は Music を -10dB に固定）、画面モード
 - アイテム: 拾う音・宝箱の音（効果音素材が無い）、鍵と扉、術符屋・道具屋での売買
+- 雷轟は今は初期の術書に入っている（確認用の暫定）。巻物で術を覚える流れを作るときに外す
+- 雷轟: 画面の揺れ・光の演出、気絶時間を技ごとに変える仕組み、連鎖（レベル）。落雷点にぴったり重なった敵は押されない（向きが0になる）
 - 術: 術のレベル、8方向の絵（今は右向きの絵を回転）、空撃ち・術符を使ったときの音と演出、日本語のドット絵フォント
 - テレポーター対応（`Teleporter` は `Character` 型を前提にしており、`Player` は未対応）
 - 旧アイテム `PickUpItem`（gloot 用）は未使用。新しい仕組みは `Pickup`
@@ -71,6 +75,7 @@ Zelda-like 2D top-down RPG (Godot 4.7 / GDScript).
 | 影 | `content/character/Shadow.png` | 主人公・敵の足元 |
 | 術符アイテム | `content/item/talisman/talisman_items.png`（16×16×7、印ごと） | 落ちている術符 |
 | コイン・宝箱 | `content/item/Treasure/`（SilverCoin・Coin2（金貨4コマ）・GoldCoin・LittleTreasureChest） | 銀貨・金貨・所持金アイコン・宝箱 |
+| 雷轟の絵 | `content/fx/raiton/`（`raiton.json`, `fx_raiton.png`） | 雷遁・雷轟の術（キャラの印・落雷・当たり判定のデータ） |
 | 死亡エフェクト | `content/fx/death/`（`death.json`） | 倒れた瞬間の土煙（`fx_death_burst.png`）と頭上の星（`fx_dizzy_stars.png`）を使用中 |
 
 ## 敵の作り方（構造）

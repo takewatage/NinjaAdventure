@@ -35,7 +35,14 @@
       112
     ],
     "pivot_is": "character visual center",
-    "z": "in front of the character (the bolt comes down from above the frame)"
+    "z": "in front of the character (the bolt comes down from above the frame)",
+    "hand_crackle": {
+      "max_x": 42,
+      "min_y": 98,
+      "max_y": 118,
+      "until_frame": 11,
+      "note": "crackle around the hands (with its dark halo): cell x < max_x, min_y <= y <= max_y, frames < until_frame. The caster shows it at the character and the rest (bolt, whose glow starts at x 45) unrotated on the strike point"
+    }
   },
   "character": {
     "sheet": "res://content/character/ninja_main/Attack.png",
@@ -62,17 +69,17 @@
     ],
     "target_note": "about 2 tiles ahead. To aim at the mouse later, move the fx so its target lands on the aim point (the sheet is drawn for this offset).",
     "hit": {
-      "shape": "ellipse",
+      "shape": "circle",
       "center_offset_from_character": [
         36,
         2
       ],
-      "rx": 14,
-      "ry": 10.5,
+      "radius": 20,
       "active_sec": [
         0.3,
         0.42
-      ]
+      ],
+      "note": "was an ellipse rx 14 / ry 10.5; widened to a circle (impact ring is about r 23)"
     },
     "status_suggestion": {
       "stun_sec": 0.6

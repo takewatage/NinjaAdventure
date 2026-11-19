@@ -9,6 +9,9 @@
 [ext_resource type="Script" uid="uid://0cn4yup57a3j" path="res://system/stat/life/resource_life.gd" id="6_xm14f"]
 [ext_resource type="PackedScene" uid="uid://domrx1cgi35kg" path="res://content/destroyable/grass.tscn" id="7_grass"]
 [ext_resource type="PackedScene" path="res://content/enemy/Slime2/slime2.tscn" id="8_slime2"]
+[ext_resource type="Script" path="res://system/debug/debug_scene.gd" id="9_debug"]
+[ext_resource type="PackedScene" uid="uid://ck8bsyolnkr5h" path="res://system/ui/player_ui.tscn" id="10_pui"]
+[ext_resource type="PackedScene" path="res://system/ui/jutsu/jutsu_ui.tscn" id="11_jui"]
 
 [sub_resource type="Resource" id="Resource_xersf"]
 resource_local_to_scene = true
@@ -29,6 +32,7 @@ max_life = 1.0
 life = 1.0
 
 [node name="Test" type="Node" unique_id=649943474]
+script = ExtResource("9_debug")
 
 [node name="TileMap" type="TileMap" parent="." unique_id=197630052]
 position = Vector2(-30, -8)
@@ -71,3 +75,11 @@ position = Vector2(219.97806, -30.41597)
 
 [node name="Slime4" parent="TileMap" unique_id=1932669753 instance=ExtResource("8_slime2")]
 position = Vector2(219.97806, 11.943069)
+
+[node name="Hud" type="CanvasLayer" parent="."]
+
+[node name="PlayerUi" parent="Hud" instance=ExtResource("10_pui")]
+unique_name_in_owner = true
+
+[node name="JutsuUi" parent="Hud" instance=ExtResource("11_jui")]
+unique_name_in_owner = true

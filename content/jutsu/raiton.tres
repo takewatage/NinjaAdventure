@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="ResourceJutsu" format=3]
+
+[ext_resource type="Script" path="res://system/jutsu/casters/raiton_caster.gd" id="1_rcast"]
+[ext_resource type="Script" path="res://system/damage/resource_damage.gd" id="2_rdmg"]
+[ext_resource type="JSON" path="res://content/fx/raiton/raiton.json" id="3_rjson"]
+[ext_resource type="Script" path="res://system/jutsu/resource_jutsu.gd" id="4_rjutsu"]
+
+[sub_resource type="Resource" id="Resource_raiton"]
+script = ExtResource("2_rdmg")
+amount = 2
+push_force = 20
+
+[resource]
+script = ExtResource("4_rjutsu")
+id = &"raiton"
+display_name = "雷遁・雷轟の術"
+element = "雷"
+talisman_pickup = 2
+icon_index = 4
+max_stock = 10
+caster = ExtResource("1_rcast")
+data = ExtResource("3_rjson")
+damage = SubResource("Resource_raiton")
