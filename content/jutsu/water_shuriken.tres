@@ -20,6 +20,7 @@ script = ExtResource("5_mbhqg")
 id = &"water_shuriken"
 display_name = "水遁・水手裏剣の術"
 element = "水"
+talisman_pickup = 5
 icon_index = 2
 max_stock = 30
 caster = ExtResource("1_luijy")

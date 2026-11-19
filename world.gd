@@ -38,6 +38,7 @@ var _changing_map: bool = false
 var _checkpoint: Dictionary = {}
 ## Campfires already lit (Campfire._key()). TODO: move into the save data.
 var _lit_campfires: Dictionary[String, bool] = {}
+var _flags: Dictionary[String, bool] = {}
 
 
 func _ready():
@@ -95,7 +96,7 @@ func generate_map(map_scene: PackedScene, entry_id: StringName = &"", at: Vector
         placeholder.queue_free()
 
     if _player == null:
-        _player = _new_player(null)
+        _player = _new_player(null, null)
     parent.add_child(_player)
     _player.place_at(pos, face)
 
@@ -123,11 +124,13 @@ func _find_entry(entry_id: StringName) -> MapEntry:
     return null
 
 
-## A fresh player. `book` carries the jutsu and talismans over (null = initial).
-func _new_player(book: ResourceJutsuBook) -> Player:
+## A fresh player. `book` carries the jutsu and talismans over, `wallet` the
+## money (null = initial).
+func _new_player(book: ResourceJutsuBook, wallet: ResourceWallet) -> Player:
     var player: Player = player_scene.instantiate()
     if book:
         player.jutsu_book = book
+    player.wallet = wallet
     player.add_child(PLAYER_ASSIGNOR.instantiate())
     player.died.connect(_on_player_died)
     player.ready.connect(_bind_ui.bind(player), CONNECT_ONE_SHOT)
@@ -136,6 +139,7 @@ func _new_player(book: ResourceJutsuBook) -> Player:
 
 func _bind_ui(player: Player) -> void:
     player_ui.resource_life = player.life
+    player_ui.wallet = player.wallet
     jutsu_ui.player = player
 
 
@@ -144,6 +148,16 @@ func _bind_ui(player: Player) -> void:
 ## Restart here after dying (a campfire calls this). Position on the current map.
 func set_checkpoint(pos: Vector2) -> void:
     _checkpoint = {"map": _map_path, "entry": &"", "position": pos}
+
+
+## One-time things already done (chests opened...). Key: map file + node path.
+## TODO: move into the save data.
+func has_flag(key: String) -> bool:
+    return _flags.get(key, false)
+
+
+func set_flag(key: String) -> void:
+    _flags[key] = true
 
 
 func is_campfire_lit(key: String) -> bool:
@@ -160,9 +174,10 @@ func _on_player_died() -> void:
     await get_tree().create_timer(death_wait).timeout
     await transition.play(Transition.Type.FADE_IN)
     var book: ResourceJutsuBook = _player.book
+    var wallet: ResourceWallet = _player.wallet
     _player.get_parent().remove_child(_player)
     _player.queue_free()
-    _player = _new_player(book)
+    _player = _new_player(book, wallet)
     generate_map(load(_checkpoint["map"]), _checkpoint["entry"], _checkpoint["position"])
     await transition.play(Transition.Type.FADE_OUT)
 

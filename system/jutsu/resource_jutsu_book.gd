@@ -73,3 +73,52 @@ func add_talismans(id: StringName, amount: int) -> int:
     stock[id] = mini(jutsu.max_stock, before + amount)
     emit_changed()
     return stock[id] - before
+
+
+## Learned jutsu of an element that use talismans.
+func jutsu_of_element(element: String) -> Array[ResourceJutsu]:
+    var list: Array[ResourceJutsu] = []
+    for jutsu: ResourceJutsu in learned:
+        if jutsu.uses_talisman and jutsu.element == element:
+            list.append(jutsu)
+    return list
+
+
+## Elements (印) of the learned jutsu that use talismans, no duplicates.
+## not_full_only: only elements with at least one jutsu below its max.
+func talisman_elements(not_full_only: bool = false) -> PackedStringArray:
+    var elements := PackedStringArray()
+    for jutsu: ResourceJutsu in learned:
+        if not jutsu.uses_talisman or jutsu.element in elements:
+            continue
+        if not_full_only and not can_take_element(jutsu.element):
+            continue
+        elements.append(jutsu.element)
+    return elements
+
+
+## A talisman of this element would refill something.
+func can_take_element(element: String) -> bool:
+    return _refill_target(element) != null
+
+
+## Picking up one talisman of an element: the jutsu of that element that is the
+## emptiest (lowest stock / max) gets its talisman_pickup.
+## Returns {"jutsu": ResourceJutsu, "added": int}, or {} if all are full / unknown.
+func add_talisman_of_element(element: String) -> Dictionary:
+    var jutsu: ResourceJutsu = _refill_target(element)
+    if jutsu == null:
+        return {}
+    var added: int = add_talismans(jutsu.id, jutsu.talisman_pickup)
+    return {"jutsu": jutsu, "added": added}
+
+
+func _refill_target(element: String) -> ResourceJutsu:
+    var best: ResourceJutsu = null
+    var best_ratio: float = 1.0
+    for jutsu: ResourceJutsu in jutsu_of_element(element):
+        var ratio: float = float(get_stock(jutsu)) / float(maxi(jutsu.max_stock, 1))
+        if ratio < best_ratio:
+            best = jutsu
+            best_ratio = ratio
+    return best

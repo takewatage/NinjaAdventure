@@ -1,0 +1,317 @@
+{
+  "_doc": "宝箱6種と開くアニメ。1列×コマ行（向きなし）。各コマ32×32、30fps。最後のコマが開いたままの状態。中身が飛び出す・光る・揺れる演出はGodot側で付ける。",
+  "cell_size": [
+    32,
+    32
+  ],
+  "fps": 30,
+  "pivot_in_cell": [
+    16,
+    29
+  ],
+  "pivot_note": "(16,29)は箱の下端の中心（地面に接する所）。Sprite2D(centered=true)なら offset=(0,-13) で、ノードの原点が箱の下端に来る。今の chest.tscn は当たり判定の下端が y=+4 なので、そのまま使うなら offset=(0,-9)。",
+  "chests": {
+    "normal": {
+      "name": "普通の宝箱",
+      "use": "マップに置いてある。お金・術符・アイテム等",
+      "texture": "res://content/prop/chest/chest_normal.png",
+      "vframes": 6,
+      "hframes": 1,
+      "width_px": 14,
+      "collision_hint": [
+        14,
+        8
+      ],
+      "closed_row": 0,
+      "opened_row": 5,
+      "open_anim": [
+        {
+          "row": 0,
+          "name": "closed",
+          "ticks": 1
+        },
+        {
+          "row": 1,
+          "name": "squash",
+          "ticks": 3
+        },
+        {
+          "row": 2,
+          "name": "lift",
+          "ticks": 2
+        },
+        {
+          "row": 3,
+          "name": "lid_up",
+          "ticks": 2
+        },
+        {
+          "row": 4,
+          "name": "lid_back",
+          "ticks": 2
+        },
+        {
+          "row": 5,
+          "name": "opened",
+          "ticks": 1
+        }
+      ],
+      "open_anim_note": "row 0 は閉じた状態の待機。開けるときは row 1 から最後まで ticks（30fps換算のコマ数）どおりに流し、最後のコマで止める。"
+    },
+    "silver": {
+      "name": "銀の宝箱",
+      "use": "普通と同じ大きさ。中身の格付けはゲーム側で決める",
+      "texture": "res://content/prop/chest/chest_silver.png",
+      "vframes": 6,
+      "hframes": 1,
+      "width_px": 14,
+      "collision_hint": [
+        14,
+        8
+      ],
+      "closed_row": 0,
+      "opened_row": 5,
+      "open_anim": [
+        {
+          "row": 0,
+          "name": "closed",
+          "ticks": 1
+        },
+        {
+          "row": 1,
+          "name": "squash",
+          "ticks": 3
+        },
+        {
+          "row": 2,
+          "name": "lift",
+          "ticks": 2
+        },
+        {
+          "row": 3,
+          "name": "lid_up",
+          "ticks": 2
+        },
+        {
+          "row": 4,
+          "name": "lid_back",
+          "ticks": 2
+        },
+        {
+          "row": 5,
+          "name": "opened",
+          "ticks": 1
+        }
+      ],
+      "open_anim_note": "row 0 は閉じた状態の待機。開けるときは row 1 から最後まで ticks（30fps換算のコマ数）どおりに流し、最後のコマで止める。"
+    },
+    "gold": {
+      "name": "金の宝箱",
+      "use": "普通と同じ大きさ。中身の格付けはゲーム側で決める",
+      "texture": "res://content/prop/chest/chest_gold.png",
+      "vframes": 6,
+      "hframes": 1,
+      "width_px": 14,
+      "collision_hint": [
+        14,
+        8
+      ],
+      "closed_row": 0,
+      "opened_row": 5,
+      "open_anim": [
+        {
+          "row": 0,
+          "name": "closed",
+          "ticks": 1
+        },
+        {
+          "row": 1,
+          "name": "squash",
+          "ticks": 3
+        },
+        {
+          "row": 2,
+          "name": "lift",
+          "ticks": 2
+        },
+        {
+          "row": 3,
+          "name": "lid_up",
+          "ticks": 2
+        },
+        {
+          "row": 4,
+          "name": "lid_back",
+          "ticks": 2
+        },
+        {
+          "row": 5,
+          "name": "opened",
+          "ticks": 1
+        }
+      ],
+      "open_anim_note": "row 0 は閉じた状態の待機。開けるときは row 1 から最後まで ticks（30fps換算のコマ数）どおりに流し、最後のコマで止める。"
+    },
+    "rare": {
+      "name": "レアな宝箱",
+      "use": "お金・レア度の高いアイテム",
+      "texture": "res://content/prop/chest/chest_rare.png",
+      "vframes": 6,
+      "hframes": 1,
+      "width_px": 16,
+      "collision_hint": [
+        16,
+        8
+      ],
+      "closed_row": 0,
+      "opened_row": 5,
+      "open_anim": [
+        {
+          "row": 0,
+          "name": "closed",
+          "ticks": 1
+        },
+        {
+          "row": 1,
+          "name": "squash",
+          "ticks": 3
+        },
+        {
+          "row": 2,
+          "name": "lift",
+          "ticks": 2
+        },
+        {
+          "row": 3,
+          "name": "lid_up",
+          "ticks": 2
+        },
+        {
+          "row": 4,
+          "name": "lid_back",
+          "ticks": 2
+        },
+        {
+          "row": 5,
+          "name": "opened",
+          "ticks": 1
+        }
+      ],
+      "open_anim_note": "row 0 は閉じた状態の待機。開けるときは row 1 から最後まで ticks（30fps換算のコマ数）どおりに流し、最後のコマで止める。"
+    },
+    "ancient": {
+      "name": "古の宝箱",
+      "use": "術の巻物や重要アイテムが1つ",
+      "texture": "res://content/prop/chest/chest_ancient.png",
+      "vframes": 6,
+      "hframes": 1,
+      "width_px": 18,
+      "collision_hint": [
+        18,
+        8
+      ],
+      "closed_row": 0,
+      "opened_row": 5,
+      "open_anim": [
+        {
+          "row": 0,
+          "name": "closed",
+          "ticks": 1
+        },
+        {
+          "row": 1,
+          "name": "squash",
+          "ticks": 3
+        },
+        {
+          "row": 2,
+          "name": "lift",
+          "ticks": 2
+        },
+        {
+          "row": 3,
+          "name": "lid_up",
+          "ticks": 2
+        },
+        {
+          "row": 4,
+          "name": "lid_back",
+          "ticks": 2
+        },
+        {
+          "row": 5,
+          "name": "opened",
+          "ticks": 1
+        }
+      ],
+      "open_anim_note": "row 0 は閉じた状態の待機。開けるときは row 1 から最後まで ticks（30fps換算のコマ数）どおりに流し、最後のコマで止める。"
+    },
+    "karakuri": {
+      "name": "カラクリ宝箱",
+      "use": "ボスを倒した後に落とす",
+      "texture": "res://content/prop/chest/chest_karakuri.png",
+      "vframes": 10,
+      "hframes": 1,
+      "width_px": 22,
+      "collision_hint": [
+        22,
+        8
+      ],
+      "closed_row": 0,
+      "opened_row": 9,
+      "open_anim": [
+        {
+          "row": 0,
+          "name": "closed",
+          "ticks": 1
+        },
+        {
+          "row": 1,
+          "name": "gear1",
+          "ticks": 3
+        },
+        {
+          "row": 2,
+          "name": "gear2",
+          "ticks": 3
+        },
+        {
+          "row": 3,
+          "name": "gear3_unlatch",
+          "ticks": 3
+        },
+        {
+          "row": 4,
+          "name": "gear4",
+          "ticks": 3
+        },
+        {
+          "row": 5,
+          "name": "squash",
+          "ticks": 3
+        },
+        {
+          "row": 6,
+          "name": "lift",
+          "ticks": 2
+        },
+        {
+          "row": 7,
+          "name": "lid_up",
+          "ticks": 2
+        },
+        {
+          "row": 8,
+          "name": "lid_back",
+          "ticks": 2
+        },
+        {
+          "row": 9,
+          "name": "opened",
+          "ticks": 1
+        }
+      ],
+      "open_anim_note": "row 0 は閉じた状態の待機。開けるときは row 1 から最後まで ticks（30fps換算のコマ数）どおりに流し、最後のコマで止める。row 1〜4 は歯車が回って留め金が外れる仕掛け部分。"
+    }
+  }
+}

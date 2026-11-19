@@ -1,0 +1,12 @@
+{
+  "taskPrefix": "NA",
+  "notionParentPageId": "72ea757e-e0ee-8251-b0da-8165bd8ca88c",
+  "notionTasksDbId": "33fa757e-e0ee-8215-bc3a-816c17b6b1ca",
+  "notionTasksDatasourceId": "1bba757e-e0ee-82cf-bdb4-87bbd9a13c5e",
+  "notionTaskStatus": {
+    "todo": "未着手",
+    "inProgress": "進行中",
+    "inReview": "実装済み",
+    "done": "完了"
+  }
+}

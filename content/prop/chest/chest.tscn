@@ -1,0 +1,22 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://system/prop/chest.gd" id="1_chest"]
+[ext_resource type="Texture2D" path="res://content/item/Treasure/LittleTreasureChest.png" id="2_tex"]
+[ext_resource type="Script" path="res://system/prop/interactable.gd" id="3_inter"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_box"]
+size = Vector2(14, 8)
+
+[node name="Chest" type="StaticBody2D"]
+script = ExtResource("1_chest")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_tex")
+offset = Vector2(0, -4)
+hframes = 2
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_box")
+
+[node name="Interactable" type="Node2D" parent="."]
+script = ExtResource("3_inter")

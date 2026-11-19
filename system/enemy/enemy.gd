@@ -230,6 +230,7 @@ func _die() -> void:
     contact_area.set_deferred("monitoring", false)
     collision_layer = 0
     _play_idle()
+    Pickup.drop(data.loot, global_position, get_parent())
     died.emit()
     var tween: Tween = create_tween()
     tween.tween_interval(0.2)

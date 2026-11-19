@@ -5,6 +5,8 @@ class_name Destroyable
 
 
 @export var life:ResourceLife
+## What it leaves behind when broken (null = nothing).
+@export var loot: ResourceLoot
 var push_velocity:= Vector2.ZERO
 
 @onready var sprite: Sprite2D = $Sprite
@@ -58,6 +60,7 @@ func flash(time = 0.2):
 
 func destroy():
 	collision_layer = 0
+	Pickup.drop(loot, global_position, get_parent())
 	await damage_fx()
 	sprite.visible = false
 	hitbox.disable()

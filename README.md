@@ -32,14 +32,22 @@ Zelda-like 2D top-down RPG (Godot 4.7 / GDScript).
   - 水遁・水手裏剣の術: 短く押すと手裏剣（1ダメージ・1体で止まる）。0.9秒溜めると大手裏剣（2ダメージ・貫通・着弾で範囲1ダメージ）。溜め中は0.4倍速
   - 術符: 術ごとに所持数。1回1枚。足りないと撃てず、左下の表示が揺れる（他の術に自動で切り替えない）。初期値は火遁10/20枚、水遁15/30枚（仮。`content/jutsu/player_jutsu_book.tres`）
   - 左下に選択中の術（アイコン・術符の数・名前）。術ホイールで切り替え（開いている間はゲームが0.2倍速）
-  - 被弾・回避で術は中断。死んでやり直すと術符も初期値に戻る（セーブができるまで）
+  - 被弾・回避で術は中断。死んでも術符の数はそのまま
+- アイテム（段階3）
+  - 拾えるアイテム `Pickup`（`system/item/pickup.gd`、`content/item/pickup/pickup.tscn`）: 術符（印ごと7種の絵、半分の大きさ＝8×8で表示。`talisman_scale`）・銀貨(1)・金貨(5、回転アニメ)。近づくと（36px）ゆっくり寄ってきて、近いほど速くなり、プレイヤーに届くと取れる。取ると頭上に「火遁 +3」「+5」が浮かぶ
+  - 術符を拾うと、同じ印の術のうちいちばん減っている術が `talisman_pickup` 枚回復（火遁3・水遁5）。全部満タンなら寄ってこない
+  - ドロップ表 `ResourceLoot`（`content/item/loot/*.tres`）: 草・壺（`Destroyable.loot`）、敵（`ResourceEnemy.loot`）、宝箱に設定。術符は「印ランダム」か「印を確定」。落ちた物は20秒で消える（最後の4秒点滅）
+  - 所持金 `ResourceWallet`: 左上のハートの下に表示（増えるとカウントアップ）。死んでも減らない
+  - 宝箱 `content/prop/chest/chest.tscn`: F で開けると中身が飛び出す。巻物（`scroll` に術を入れる）なら術を覚える。開けた宝箱・手置きのアイテムは再訪しても戻らない（`world.gd` の `has_flag` / `set_flag`。セーブができたらそこへ）
 
 ### これから
 - 調べられる物に近づいたときの表示（「F」の吹き出しなど）。村の外周は壁が無く、マップの外へ歩いて出られる
 - タイトル画面（`content/menu/title_screen.tscn`）は 1920×1080 前提の文字サイズのまま。480×270 に合わせて作り直す（段階6）
-- 術: 術符を拾って補充する仕組み（壺・草から出る）、術のレベル、8方向の絵（今は右向きの絵を回転）、空撃ち・術符を使ったときの音と演出、日本語のドット絵フォント
+- 設定画面（段階6）: BGM・効果音の音量（`default_bus_layout.tres` の Music / Sound バスを `AudioServer.set_bus_volume_db` で変える。今は Music を -10dB に固定）、画面モード
+- アイテム: 拾う音・宝箱の音（効果音素材が無い）、鍵と扉、術符屋・道具屋での売買
+- 術: 術のレベル、8方向の絵（今は右向きの絵を回転）、空撃ち・術符を使ったときの音と演出、日本語のドット絵フォント
 - テレポーター対応（`Teleporter` は `Character` 型を前提にしており、`Player` は未対応）
-- アイテム取得（`PickUpItem` との接触）
+- 旧アイテム `PickUpItem`（gloot 用）は未使用。新しい仕組みは `Pickup`
 - 敵の2体目（使い回しの検証）、壁越しに見つけないための視線チェック、NavigationAgent2D による経路探索
 
 ## 操作
@@ -51,7 +59,7 @@ Zelda-like 2D top-down RPG (Godot 4.7 / GDScript).
 | 回避 | Shift | B（button 1） |
 | 術を使う（カーソルの方向へ。長押しで溜め・吹き続け） | 右クリック / E | X（button 2） |
 | 術ホイール（長押しで開く → カーソルで選んで左クリック。離すか右クリックでキャンセル） | Q | LB（button 9）※選択はマウスのみ |
-| 調べる（焚き火など） | F | A（button 0） |
+| 調べる（焚き火・宝箱など） | F | A（button 0） |
 
 ## 素材
 
@@ -61,6 +69,8 @@ Zelda-like 2D top-down RPG (Godot 4.7 / GDScript).
 | 三段攻撃エフェクト | `content/fx/combo3/`（8方向版 `*_8dir*` を使用中。4方向版は未使用） | 攻撃エフェクト・当たり判定データ |
 | スライム | `content/enemy/Slime2/Slime2.png`（16×16、列=向き・行=コマ） | Slime2 の歩き・待機 |
 | 影 | `content/character/Shadow.png` | 主人公・敵の足元 |
+| 術符アイテム | `content/item/talisman/talisman_items.png`（16×16×7、印ごと） | 落ちている術符 |
+| コイン・宝箱 | `content/item/Treasure/`（SilverCoin・Coin2（金貨4コマ）・GoldCoin・LittleTreasureChest） | 銀貨・金貨・所持金アイコン・宝箱 |
 | 死亡エフェクト | `content/fx/death/`（`death.json`） | 倒れた瞬間の土煙（`fx_death_burst.png`）と頭上の星（`fx_dizzy_stars.png`）を使用中 |
 
 ## 敵の作り方（構造）

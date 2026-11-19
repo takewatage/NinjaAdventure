@@ -6,6 +6,8 @@
 [ext_resource type="Texture2D" uid="uid://b4xd2vlppyawo" path="res://content/particle/particle_pot.png" id="4_4bsrr"]
 [ext_resource type="Resource" uid="uid://cwqdt1vxig3wi" path="res://content/particle/particle_pot.tres" id="5_b8dec"]
 
+[ext_resource type="Resource" path="res://content/item/loot/pot_loot.tres" id="9_loot"]
+
 [sub_resource type="Resource" id="Resource_r35w6"]
 resource_local_to_scene = true
 script = ExtResource("2_mv3xy")
@@ -20,6 +22,7 @@ particles_anim_v_frames = 1
 particles_anim_loop = false
 
 [node name="Pot" instance=ExtResource("1_bsayv")]
+loot = ExtResource("9_loot")
 life = SubResource("Resource_r35w6")
 
 [node name="Sprite" parent="." index="1"]

@@ -1,0 +1,26 @@
+{
+  "_doc": "術符（ジュツフ）のアイテム画像。印（element）ごとに1コマ。各術の術符は、その術の印のコマを使う（術符の所持は術ごとに別々だが、絵は印で共通）。光・上下の揺れ・取得時の演出はGodot側で付ける。",
+  "texture": "res://content/item/talisman/talisman_items.png",
+  "cell_size": [16, 16],
+  "hframes": 7,
+  "vframes": 1,
+  "pivot_in_cell": [7, 8],
+  "pivot_note": "札の見た目の中心。札本体は x=2..12, y=1..14（輪郭込み）。右と下の1pxは紙の影。",
+  "filter": "nearest",
+  "frames": [
+    {"frame": 0, "element": "火", "element_id": "fire",    "icon": "炎",     "color": "#c9281f", "jutsu": ["katon", "fireball", "hibashiri"]},
+    {"frame": 1, "element": "水", "element_id": "water",   "icon": "しずく", "color": "#1b6fb3", "jutsu": ["water_shuriken", "suijin", "tsunami"]},
+    {"frame": 2, "element": "風", "element_id": "wind",    "icon": "渦",     "color": "#6cb83a", "jutsu": ["fuuton"]},
+    {"frame": 3, "element": "雷", "element_id": "thunder", "icon": "稲妻",   "color": "#f0be28", "jutsu": ["raiton", "raisou", "raikyuu"]},
+    {"frame": 4, "element": "土", "element_id": "earth",   "icon": "山",     "color": "#966034", "jutsu": ["chisoujin", "haniwahei", "iwato"]},
+    {"frame": 5, "element": "陽", "element_id": "yang",    "icon": "太陽",   "color": "#f09628", "jutsu": []},
+    {"frame": 6, "element": "陰", "element_id": "yin",     "icon": "三日月", "color": "#965ad2", "paper": "dark", "jutsu": []}
+  ],
+  "frame_from_element": {"火": 0, "水": 1, "風": 2, "雷": 3, "土": 4, "陽": 5, "陰": 6},
+  "notes": [
+    "色と記号の両方で見分けられるようにしてある（色が分かりにくい人でも記号で判別できる）。",
+    "陰だけ紙を黒くして、陽と対になるようにした。",
+    "jutsu の一覧は 忍術システム仕様.md の2026-11-16時点。仮IDを含む。",
+    "氷は未作成。必要になったら frame 7 として追加する。"
+  ]
+}

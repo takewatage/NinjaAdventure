@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ResourceLoot" format=3]
+
+[ext_resource type="Script" path="res://system/item/resource_loot.gd" id="1_loot"]
+[ext_resource type="Script" path="res://system/item/resource_loot_entry.gd" id="2_entry"]
+
+[sub_resource type="Resource" id="Resource_e0"]
+script = ExtResource("2_entry")
+kind = 2
+chance = 1.0
+count_min = 3
+count_max = 3
+
+[sub_resource type="Resource" id="Resource_e1"]
+script = ExtResource("2_entry")
+kind = 0
+chance = 1.0
+count_min = 2
+count_max = 2
+element = "火"
+
+[resource]
+script = ExtResource("1_loot")
+pick_one = false
+entries = Array[ExtResource("2_entry")]([SubResource("Resource_e0"), SubResource("Resource_e1")])
+metadata/_doc = "チュートリアルの道の宝箱: 金貨3枚＋火の術符2枚"

@@ -7,6 +7,8 @@
 [ext_resource type="Script" path="res://system/map/map_exit.gd" id="5_exit"]
 [ext_resource type="Script" path="res://system/environment/environment_shape.gd" id="6_envshape"]
 [ext_resource type="Resource" path="res://content/environment/field/environment.tres" id="7_env"]
+[ext_resource type="PackedScene" path="res://content/prop/chest/chest.tscn" id="8_chest"]
+[ext_resource type="Resource" path="res://content/item/loot/chest_boss_road.tres" id="9_chestloot"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_exit"]
 size = Vector2(96, 16)
@@ -56,3 +58,6 @@ target_entry = &"from_boss_road"
 [node name="Shape" type="CollisionShape2D" parent="ExitBottom"]
 shape = SubResource("RectangleShape2D_exit")
 
+[node name="Chest1" parent="Tilemap" instance=ExtResource("8_chest")]
+position = Vector2(328, 232)
+loot = ExtResource("9_chestloot")

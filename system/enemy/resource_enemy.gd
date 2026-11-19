@@ -15,3 +15,6 @@ class_name ResourceEnemy
 @export var knockback_speed: float = 140.0
 ## Seconds the enemy can't act after being hit.
 @export var stun_time: float = 0.35
+@export_category("drop")
+## Rolled when the enemy dies (money, mostly). null = nothing.
+@export var loot: ResourceLoot

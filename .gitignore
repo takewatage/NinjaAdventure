@@ -24,3 +24,9 @@ Thumbs.db
 
 # Claude Code personal settings (project rules in .claude/rules are shared)
 .claude/settings.local.json
+
+# Secrets (Notion token etc.) — never commit
+.env
+.env.*
+!.env.example
+.mcp.json

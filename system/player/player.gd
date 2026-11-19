@@ -96,6 +96,8 @@ var state: State = State.MOVE
 var life: ResourceLife
 ## This player's jutsu book (a copy of jutsu_book).
 var book: ResourceJutsuBook
+## Money. The World passes the same wallet to the next player after a defeat.
+var wallet: ResourceWallet
 ## The jutsu button is held. Set by HumanController every frame.
 var jutsu_held: bool = false
 
@@ -157,6 +159,8 @@ func _ready() -> void:
         book.stock = jutsu_book.stock.duplicate()
     else:
         book = ResourceJutsuBook.new()
+    if wallet == null:
+        wallet = ResourceWallet.new()
     fx.visible = false
     fx.finished.connect(_on_fx_finished)
     # PlayerAssignor (a child) has already added us to "player" by now.

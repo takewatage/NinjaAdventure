@@ -19,6 +19,8 @@ class_name ResourceJutsu
 @export var per_cast: int = 1
 ## The most talismans of this jutsu the player can hold.
 @export var max_stock: int = 20
+## Talismans restored by picking up one talisman of this jutsu's element.
+@export var talisman_pickup: int = 3
 
 @export_category("cast")
 ## A script extending JutsuCaster. A new node with it is made for every cast.
