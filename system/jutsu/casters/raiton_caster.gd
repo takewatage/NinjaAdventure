@@ -41,6 +41,8 @@ var _end_at: float = 0.0
 var _struck: bool = false
 var _bolt_fx: JutsuFxOnce
 var _hand_fx: JutsuFxOnce
+## Where the bolt lands (global), fixed at the start.
+var _target: Vector2
 
 
 func begin() -> void:
@@ -54,6 +56,7 @@ func begin() -> void:
     for s: float in secs:
         _end_at += s
     var world: Node = player.get_parent()
+    _target = _clip_to_wall(to_global(to_vector(_data["strike"]["target_offset_from_character"])))
     var block: Dictionary = _data["fx"]
     # Bolt: unrotated, moved so the sheet's own target lands on the strike point.
     var target_offset: Vector2 = to_vector(_data["strike"]["target_offset_from_character"])
@@ -75,9 +78,20 @@ func update(delta: float, _held: bool) -> void:
         queue_free()
 
 
-## Where the bolt lands: target distance along the aim (caster is rotated by it).
+## Where the bolt lands: target distance along the aim, or just before a wall.
 func _strike_point() -> Vector2:
-    return to_global(to_vector(_data["strike"]["target_offset_from_character"]))
+    return _target
+
+
+## Pulls the strike point back in front of the first wall (layer 1) on the way.
+func _clip_to_wall(point: Vector2) -> Vector2:
+    var from: Vector2 = global_position
+    var query := PhysicsRayQueryParameters2D.create(from, point, DamageArea.WALL_LAYER)
+    var result: Dictionary = player.get_world_2d().direct_space_state.intersect_ray(query)
+    if result.is_empty():
+        return point
+    var hit_at: Vector2 = result["position"]
+    return hit_at - (point - from).normalized() * 2.0
 
 
 func _apply_split(fx: JutsuFxOnce, hand: bool) -> void:
@@ -114,6 +128,7 @@ func _strike() -> void:
     # Hit each enemy inside once.
     area.repeat_while_overlapping = true
     area.repeat_interval = 999.0
+    area.blocked_by_walls = true
     area.add_child(collision)
     player.get_parent().add_child(area)
     area.global_position = _strike_point()

@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ResourceJutsu" format=3]
+
+[ext_resource type="Script" path="res://system/jutsu/casters/kunai_caster.gd" id="1_kcast"]
+[ext_resource type="Script" path="res://system/damage/resource_damage.gd" id="2_kdmg"]
+[ext_resource type="JSON" path="res://content/fx/kunai/kunai.json" id="3_kjson"]
+[ext_resource type="Script" path="res://system/jutsu/resource_jutsu.gd" id="4_kjutsu"]
+[ext_resource type="Texture2D" path="res://content/weapon/kunai/Kunai.png" id="5_kicon"]
+
+[sub_resource type="Resource" id="Resource_kunai"]
+script = ExtResource("2_kdmg")
+push_force = 10
+
+[resource]
+script = ExtResource("4_kjutsu")
+id = &"kunai"
+display_name = "クナイ"
+element = "武器"
+icon_texture = ExtResource("5_kicon")
+uses_talisman = false
+caster = ExtResource("1_kcast")
+cooldown = 0.5
+repeat_while_held = true
+data = ExtResource("3_kjson")
+damage = SubResource("Resource_kunai")

@@ -99,7 +99,7 @@ func _spawn_projectile() -> void:
     # The caster may be mirrored; work out the spawn point in world space.
     var at: Vector2 = global_position + offset.rotated(aim_angle)
     var p_damage: ResourceDamage = jutsu.damage_extra if _big and jutsu.damage_extra else jutsu.damage
-    var projectile := JutsuProjectile.spawn(player.get_parent(), at, aim_vector(), block, p_damage, player.team)
+    var projectile := JutsuProjectile.spawn(player.get_parent(), at, aim_vector(), block, p_damage, player.team, global_position)
     projectile.impact_block = data["impact"]
     var splash: Variant = data["impact"].get("splash")
     if splash is Dictionary:

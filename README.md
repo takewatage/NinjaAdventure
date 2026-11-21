@@ -32,6 +32,7 @@ Zelda-like 2D top-down RPG (Godot 4.7 / GDScript).
   - 火遁・息吹の術: 押している間、前方の扇形に炎（0.15秒ごとに多段ヒット）。歩きは0.3倍速。離すと終わる（最短0.33秒）
   - 水遁・水手裏剣の術: 短く押すと手裏剣（1ダメージ・1体で止まる）。0.9秒溜めると大手裏剣（2ダメージ・貫通・着弾で範囲1ダメージ）。溜め中は0.4倍速
   - 雷遁・雷轟の術: 押すと狙った方向の36px先に、0.3秒後に雷が落ちる（半径20pxの円の範囲、2ダメージ、当たった敵は落雷点から外向きに押される）。絵は回転させず、どの向きに撃っても雷は画面の上から落ちる。手元の火花だけキャラの位置に出す（左向きは左右反転）。発動中は立ち止まり、向きも固定。落雷前に被弾・回避すると雷も落ちない
+  - クナイ（術符なし・弾数無限）: 術ホイールの一番上。術ボタンで、攻撃モーション（Attack.png の 0→1→2 段、0.3秒）の間は立ち止まり、カーソルの方向へ1本投げる。押しっぱなしで0.5秒ごとに投げ続ける（`kunai.tres` の `cooldown` / `repeat_while_held`）。1ダメージ・最初の敵か壁で止まる・射程160px・速さ240px/秒（`content/fx/kunai/kunai.json`）。絵は `Kunai.png` を投げた向きに回転。動きは `system/jutsu/casters/kunai_caster.gd`、飛び道具は `system/weapon/kunai_projectile.gd`。初期の術書に入っていて、最初から使える
   - 術符: 術ごとに所持数。1回1枚。足りないと撃てず、左下の表示が揺れる（他の術に自動で切り替えない）。初期値は火遁10/20枚、水遁15/30枚、雷轟5/10枚（仮。`content/jutsu/player_jutsu_book.tres`）
   - 左下に選択中の術（アイコン・術符の数・名前）。術ホイールで切り替え（開いている間はゲームが0.2倍速）
   - 被弾・回避で術は中断。死んでも術符の数はそのまま
@@ -48,10 +49,12 @@ Zelda-like 2D top-down RPG (Godot 4.7 / GDScript).
 - 設定画面（段階6）: BGM・効果音の音量（`default_bus_layout.tres` の Music / Sound バスを `AudioServer.set_bus_volume_db` で変える。今は Music を -10dB に固定）、画面モード
 - アイテム: 拾う音・宝箱の音（効果音素材が無い）、鍵と扉、術符屋・道具屋での売買
 - 雷轟は今は初期の術書に入っている（確認用の暫定）。巻物で術を覚える流れを作るときに外す
+- 火遁の炎の絵は壁の上にも描かれる（当たり判定は壁で止まる）。絵も壁で切るなら別対応
 - 雷轟: 画面の揺れ・光の演出、気絶時間を技ごとに変える仕組み、連鎖（レベル）。落雷点にぴったり重なった敵は押されない（向きが0になる）
 - 術: 術のレベル、8方向の絵（今は右向きの絵を回転）、空撃ち・術符を使ったときの音と演出、日本語のドット絵フォント
 - テレポーター対応（`Teleporter` は `Character` 型を前提にしており、`Player` は未対応）
 - 旧アイテム `PickUpItem`（gloot 用）は未使用。新しい仕組みは `Pickup`
+- クナイ: 投げる音、刺さった・壁に当たったときの演出。押した瞬間がクールタイム中だと何も起きない（押しっぱなしなら0.5秒ごとに出る）
 - 敵の2体目（使い回しの検証）、壁越しに見つけないための視線チェック、NavigationAgent2D による経路探索
 
 ## 操作
@@ -75,6 +78,7 @@ Zelda-like 2D top-down RPG (Godot 4.7 / GDScript).
 | 影 | `content/character/Shadow.png` | 主人公・敵の足元 |
 | 術符アイテム | `content/item/talisman/talisman_items.png`（16×16×7、印ごと） | 落ちている術符 |
 | コイン・宝箱 | `content/item/Treasure/`（SilverCoin・Coin2（金貨4コマ）・GoldCoin・LittleTreasureChest） | 銀貨・金貨・所持金アイコン・宝箱 |
+| クナイ | `content/weapon/kunai/`（`kunai_rot16.png` 16×16×16コマ、22.5°刻み。元絵 `kunai_small.png` 11×5。`Kunai.png` 16×16） | 三段攻撃の手持ちクナイ（`kunai_rot16.png`）・投げクナイ（`Kunai.png` 16×16、右上向き） |
 | 雷轟の絵 | `content/fx/raiton/`（`raiton.json`, `fx_raiton.png`） | 雷遁・雷轟の術（キャラの印・落雷・当たり判定のデータ） |
 | 死亡エフェクト | `content/fx/death/`（`death.json`） | 倒れた瞬間の土煙（`fx_death_burst.png`）と頭上の星（`fx_dizzy_stars.png`）を使用中 |
 
@@ -100,6 +104,9 @@ Zelda-like 2D top-down RPG (Godot 4.7 / GDScript).
 - `DamageArea`（攻撃側）が `Hitbox`（受ける側）に触れると `take_damage` が呼ばれる。陣営（`ResourceDamageTeam`）が同じ・味方なら当たらない
 - `repeat_while_overlapping` をオンにすると重なっている間ずっと当て続ける（接触ダメージ用）。実際に何回痛がるかは受ける側の無敵時間で決まる
 - 敵の `ContactArea` は常時、`AttackArea` は攻撃の判定中だけ有効
+- 壁（物理レイヤー1）: 飛び道具（クナイ・水手裏剣）は壁で止まる。毎フレーム前の位置から次の位置までをレイで調べ（`DamageArea.sweep_walls`）、壁の手前で止める。壁に密着して撃っても、投げた人の位置から調べるので壁の向こうには出ない。当たった物が壺・草のように Hitbox を持っていれば、そのままダメージを与える
+- 壁越しに当てない: `DamageArea.blocked_by_walls` をオンにすると、発生源（`wall_check_origin`、空ならエリアの位置）から相手までの間に壁があれば当てない。火遁の炎・雷轟・大手裏剣の爆風で使用。雷轟は落雷点が壁の向こうなら壁の手前に落ちる
+- 注意: `monitorable = false` の Area2D は壁（StaticBody・TileMap）を検知しない（Godot の既知の不具合 #17238）。`DamageArea` は `monitorable = false` にしているので、壁で止めたい飛び道具は `monitorable = true` に戻している（`collision_layer` は0のまま）
 
 補足:
 - `tools/build_enemy_scenes.gd` は最初の生成用。既存ファイルは上書きしないので、以後はエディターで編集してよい

@@ -51,6 +51,8 @@ GLB models: instantiate the `PackedScene`, measure the `MeshInstance3D` AABB to 
 
 Most Godot behavior the model already knows; these few fail with no error:
 
+- **An `Area2D` with `monitorable = false` never reports static bodies** (StaticBody2D, TileMap walls) in `body_entered` — it only sees moving bodies ([godot#17238](https://github.com/godotengine/godot/issues/17238), reproduced on 4.7.2). Anything that must hit walls keeps `monitorable = true`; keep `collision_layer = 0` so other areas still can't detect it. In this project `DamageArea._ready()` sets `monitorable = false`, so projectiles turn it back on, and they also ray-sweep each step (`DamageArea.sweep_walls`) because `body_entered` arrives a step late.
+
 - **On macOS a fatal error hangs instead of exiting.** Godot reports it in an `NSAlert` modal that `--headless` can't dismiss, so the process idles at 0% CPU forever (a missing main scene does it too). Run every `godot` call under `timeout`; exit 124 is the failure.
 - **`SurfaceTool.generate_normals()`** is required for a procedural mesh to *receive* shadows. Without it (or with `CULL_DISABLED` as a "safety net"), shadows silently vanish — fix winding instead.
 - **MultiMeshInstance3D + GLB** loses the mesh on pack/save; use individual instances. `material_override` on GLB-internal nodes also won't serialize (owner is skipped) — use a procedural `ArrayMesh` when a custom material is needed.

@@ -11,6 +11,8 @@ class_name ResourceJutsu
 @export var element: String
 ## Column in content/ui/jutsu_wheel/ui_jutsu_icons.png.
 @export var icon_index: int = 0
+## Set = drawn (centered, unscaled) instead of the icon_index column.
+@export var icon_texture: Texture2D
 
 @export_category("talisman")
 ## Off = never needs talismans (and shows no ammo badge).
@@ -25,6 +27,10 @@ class_name ResourceJutsu
 @export_category("cast")
 ## A script extending JutsuCaster. A new node with it is made for every cast.
 @export var caster: Script
+## Seconds from one cast's start until the next can start. 0 = no wait.
+@export var cooldown: float = 0.0
+## On: holding the jutsu button casts again as soon as the cooldown allows.
+@export var repeat_while_held: bool = false
 ## Fx / timing data read by the caster (content/fx/<id>/<id>.json).
 @export var data: JSON
 ## Extra data, e.g. the charged version of the water shuriken.

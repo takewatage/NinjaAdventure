@@ -31,6 +31,8 @@ func begin() -> void:
     _area.damage = jutsu.damage
     _area.team = player.team
     _area.repeat_while_overlapping = true
+    # The cone is drawn over walls, but only hits what the mouth can see.
+    _area.blocked_by_walls = true
     _area.repeat_interval = float(hit_info["damage_tick_sec"])
     _area.position = to_vector(hit_info["origin_offset_from_character"])
     _shape = CollisionPolygon2D.new()
@@ -54,6 +56,8 @@ func update(delta: float, held: bool) -> void:
     var hit_info: Dictionary = _data["hit"]
     var grow: float = clampf(_time / float(hit_info["radius_grows_over_start_sec"]), 0.05, 1.0)
     _shape.scale = Vector2(grow, grow)
+    # Check walls from the character, not the mouth (the mouth may be inside a wall).
+    _area.wall_check_origin = global_position
 
     if _released_at < 0.0 and not held:
         _released_at = _time

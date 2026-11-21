@@ -131,6 +131,8 @@ var _cast_pressed: bool = false
 var _interact_pressed: bool = false
 var _just_teleported: bool = false
 var _caster: JutsuCaster
+## Seconds left before a jutsu can be cast again, per jutsu id (ResourceJutsu.cooldown).
+var _jutsu_cooldown: Dictionary[StringName, float] = {}
 
 @onready var sprite: SheetAnimator = $Sprite
 @onready var fx: SheetAnimator = $Fx
@@ -217,6 +219,8 @@ func place_at(pos: Vector2, face: Vector2 = Vector2.ZERO) -> void:
 
 func _physics_process(delta: float) -> void:
     _dodge_cooldown_left = maxf(0.0, _dodge_cooldown_left - delta)
+    for id: StringName in _jutsu_cooldown:
+        _jutsu_cooldown[id] = maxf(0.0, _jutsu_cooldown[id] - delta)
     if _combo_reset_left > 0.0:
         _combo_reset_left -= delta
         if _combo_reset_left <= 0.0:
@@ -294,7 +298,7 @@ func _process_move(delta: float) -> void:
     if _attack_pressed and not _hits.is_empty():
         _start_hit(_next_hit)
         return
-    if _cast_pressed:
+    if _cast_pressed or _wants_repeat_cast():
         _start_cast()
         if state == State.CAST:
             return
@@ -467,8 +471,12 @@ func _start_cast() -> void:
     var jutsu: ResourceJutsu = book.get_selected()
     if jutsu == null or jutsu.caster == null:
         return
+    if _jutsu_cooldown.get(jutsu.id, 0.0) > 0.0:
+        return  # Still cooling down (e.g. the kunai: one throw per 0.5 s).
     if not book.consume(jutsu):
         return  # Not enough talismans: the book emits dry_fired (the UI reacts).
+    if jutsu.cooldown > 0.0:
+        _jutsu_cooldown[jutsu.id] = jutsu.cooldown
     state = State.CAST
     _state_time = 0.0
     var angle: float = _cast_aim_angle()
@@ -479,6 +487,14 @@ func _start_cast() -> void:
     _caster.finished.connect(_on_cast_finished.bind(_caster))
     add_child(_caster)
     _caster.begin()
+
+
+## The jutsu button is still held and the selected jutsu repeats while held.
+func _wants_repeat_cast() -> bool:
+    if not jutsu_held:
+        return false
+    var jutsu: ResourceJutsu = book.get_selected()
+    return jutsu != null and jutsu.repeat_while_held and _jutsu_cooldown.get(jutsu.id, 0.0) <= 0.0
 
 
 func _process_cast(delta: float) -> void:

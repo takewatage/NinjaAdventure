@@ -1,0 +1,19 @@
+{
+  "_doc": "Basic kunai throw (no talisman, unlimited). Read by system/jutsu/casters/kunai_caster.gd. Times in seconds, distances in px.",
+  "character": {
+    "sheet": "res://content/character/ninja_main/Attack.png",
+    "rows": [0, 1, 2],
+    "frame_sec": [0.08, 0.1, 0.12],
+    "note": "row 0 wind-up, row 1 the throw (the kunai leaves the hand), row 2 follow-through. The player stands still for the whole motion."
+  },
+  "projectile": {
+    "spawn_sec": 0.08,
+    "spawn_offset_from_character": [6, 0],
+    "speed_px_s": 240,
+    "max_range_px": 160,
+    "hit_radius": 3,
+    "sprite": "res://content/weapon/kunai/Kunai.png",
+    "sprite_points_at_deg": -45,
+    "note": "Kunai.png (16x16) points up-right; the sprite is turned by (aim - sprite_points_at_deg). Stops on the first enemy, a wall (layer 1) or at max range."
+  }
+}

@@ -134,13 +134,14 @@
           0,
           -56
         ],
-        "jutsu": "kenjutsu",
-        "name": "三段斬り",
+        "jutsu": "kunai",
+        "name": "クナイ",
         "icon_index": 0,
-        "data": "res://content/fx/combo3/combo3_8dir.json",
+        "icon_texture": "res://content/weapon/kunai/Kunai.png",
+        "data": "res://content/fx/kunai/kunai.json",
         "locked": false,
-        "element": "基本攻撃",
-        "note": "basic attack (no talisman, always usable). It may move out of the wheel to its own button; the slot then becomes another jutsu."
+        "element": "武器",
+        "note": "basic kunai throw (no talisman, unlimited). Was the kenjutsu (三段斬り) slot; the combo lives on its own button (left click)."
       },
       {
         "slot": 7,

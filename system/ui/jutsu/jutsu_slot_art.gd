@@ -43,8 +43,13 @@ func draw(canvas: CanvasItem, top_left: Vector2, state: SlotState, jutsu: Resour
     var icon_index: int = locked_icon if jutsu == null else jutsu.icon_index
     var empty: bool = jutsu != null and book != null and not book.can_cast(jutsu)
     var icon_color := Color(1, 1, 1, EMPTY_ICON_ALPHA if empty else 1.0)
-    canvas.draw_texture_rect_region(icon_sheet, Rect2(top_left + ICON_OFFSET, Vector2(ICON_SIZE, ICON_SIZE)),
-        Rect2(icon_index * ICON_SIZE, 0, ICON_SIZE, ICON_SIZE), icon_color)
+    if jutsu != null and jutsu.icon_texture != null:
+        var size: Vector2 = jutsu.icon_texture.get_size()
+        var at: Vector2 = top_left + ICON_OFFSET + ((Vector2.ONE * ICON_SIZE - size) / 2.0).floor()
+        canvas.draw_texture(jutsu.icon_texture, at, icon_color)
+    else:
+        canvas.draw_texture_rect_region(icon_sheet, Rect2(top_left + ICON_OFFSET, Vector2(ICON_SIZE, ICON_SIZE)),
+            Rect2(icon_index * ICON_SIZE, 0, ICON_SIZE, ICON_SIZE), icon_color)
     if jutsu != null and book != null and jutsu.uses_talisman:
         _draw_ammo(canvas, top_left, mini(book.get_stock(jutsu), 999), empty)
 
