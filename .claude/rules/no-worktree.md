@@ -12,10 +12,11 @@
 
 ## 適用
 
-- 新しいブランチが必要なときは、worktree ではなくリポジトリ直下で `git switch -c` する。
+- ブランチは作らず、リポジトリ直下の `main` で作業する（[no-branch.md](no-branch.md)）。
 - 計画書（`.tasks/plans/`）もリポジトリ直下に置く。
 - サブエージェントに作業させるときも、作業ディレクトリはリポジトリ直下を渡す。
 
 ## 関連ファイル
 
 - [communication.md](communication.md) — 応答と作業報告のルール
+- [no-branch.md](no-branch.md) — ブランチを分けずに main へ直接コミットする
